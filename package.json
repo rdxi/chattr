@@ -1,0 +1,21 @@
+{
+  "name": "chattr",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "animal-id": "0.0.1",
+    "bcryptjs": "^2.4.3",
+    "chance": "^1.0.11",
+    "express": "^4.16.2",
+    "ioredis": "^3.1.4",
+    "jsonwebtoken": "^8.1.0",
+    "sanitize-html": "^1.14.1",
+    "socket.io": "^2.0.3"
+  }
+}

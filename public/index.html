@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Chattr</title>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="container">
+    <div class="sidebar">
+      <div class="sidebar-users">
+        <div class="sidebar-users-title">
+          Users online
+        </div>
+        <div class="sidebar-user">Johnatan</div>
+        <div class="sidebar-user">Kate</div>
+      </div>
+      <div class="sidebar-users sidebar-users--offline">
+        <div class="sidebar-users-title">
+            Users offline
+        </div>
+        <div class="sidebar-user">Bobbert</div>
+        <div class="sidebar-user">Very long person name weird too long</div>
+      </div>
+    </div>
+    <div class="main">
+      <div class="main-title">
+        Chattr discussion
+      </div>
+      <div class="main-messages">
+        <!-- <div class="main-message">
+          <div class="main-message-avatar"><img src="http://www.gravatar.com/avatar/cd93653575932c775ae455c18e8b2874?d=retro" alt="avatar"></div>
+          <div class="main-message-user">Bobbert</div>
+          <div class="main-message-time">Oct 20th, 18:10</div>
+          <div class="main-message-text">Hello frien</div>
+        </div>
+
+        <div class="main-message">
+          <div class="main-message-avatar"><img src="http://www.gravatar.com/avatar/a2a2b6fccb725f6d1ee2c95c029d0b5b?d=retro" alt="avatar"></div>
+          <div class="main-message-user">Johnatan</div>
+          <div class="main-message-time">Oct 20th, 18:10</div>
+          <div class="main-message-text">farewell</div>
+        </div> -->
+      </div>
+      <div class="main-input">
+        <form action="">
+          <input id="user-message" type="text" placeholder="your message">
+        </form>
+        <!-- <textarea placeholder="your message"></textarea> -->
+      </div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js"></script>
+  <script src="js/libs/anchorme.min.js"></script>
+  <script src="js/client.js"></script>
+
+  <script id="message-template" type="text/template">
+    <div class="main-message">
+      <div class="main-message-avatar"><img src="{{avatar}}"></div>
+      <div class="main-message-user">{{user}}</div>
+      <div class="main-message-time">{{time}}</div>
+      <div class="main-message-text">{{{text}}}</div>
+      {{#image}}
+        <div class="main-message-image"><img src="{{image}}"></div>
+      {{/image}}
+    </div>
+  </script>
+</body>
+</html>
