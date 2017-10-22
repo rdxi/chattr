@@ -1,8 +1,12 @@
 const path = require('path');
 const http = require('http');
+
 const express = require('express');
+const compression = require('compression');
 
 const app = express();
+app.use(compression());
+
 const server = http.Server(app);
 const io = require('socket.io')(server);
 

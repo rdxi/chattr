@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
   <title>Chattr</title>
 
   <link rel="stylesheet" href="css/style.css">
@@ -56,9 +57,9 @@
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js"></script>
+  <script src="js/libs/jquery-3.2.1.min.js"></script>
+  <script src="js/libs/mustache.min.js"></script>
+  <script src="js/libs/moment.min.js"></script>
   <script src="js/libs/anchorme.min.js"></script>
   <script src="js/client.js"></script>
 
@@ -66,7 +67,7 @@
     <div class="main-message">
       <div class="main-message-avatar"><img src="{{avatar}}"></div>
       <div class="main-message-user">{{user}}</div>
-      <div class="main-message-time">{{time}}</div>
+      <div class="main-message-date">{{date}}</div>
       <div class="main-message-text">{{{text}}}</div>
       {{#image}}
         <div class="main-message-image"><img src="{{image}}"></div>

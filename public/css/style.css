@@ -118,7 +118,7 @@ input, textarea, button {
   font-weight: bold;
 }
 
-.main-message-time {
+.main-message-date {
   display: inline-block;
   vertical-align: baseline;
   color: #999;

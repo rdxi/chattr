@@ -36,7 +36,7 @@ $(function () {
         renderMessage({
           avatar: obj.avatar,
           user: obj.name,
-          time: obj.time,
+          date: obj.date,
           text: obj.text
         });
       });
@@ -51,7 +51,7 @@ $(function () {
     renderMessage({
       avatar: obj.avatar,
       user: obj.name,
-      time: obj.time,
+      date: obj.date,
       text: obj.text
     });
 
@@ -64,10 +64,8 @@ $(function () {
 
     var avatar = msg.avatar || '//www.gravatar.com/avatar/00000000000000000000000000000000';
     var user = msg.user || 'anonymous';
-    // var time = msg.time || moment().format('MMM Do, HH:mm');
-    var time = msg.time ? moment(msg.time).format("MMM Do, HH:mm") : moment().format("MMM Do, HH:mm");
+    var date = msg.date ? moment(msg.date).format("MMM Do, HH:mm") : moment().format("MMM Do, HH:mm");
     var text = anchorme(msg.text) || '??no text??';
-
 
 
     // TODO: auto-embed images
@@ -88,7 +86,7 @@ $(function () {
     var html = Mustache.render(template, {
       avatar: avatar,
       user: user,
-      time: time,
+      date: date,
       text: text
     });
 
