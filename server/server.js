@@ -30,11 +30,37 @@ var sanitizeHtml = require('sanitize-html');
 
 
 // var server = http.createServer(app);
+var userList = {users: []};
+
+var addToUserList = function(userObj) {
+  var alreadyAdded = userList.users.find(function(arrObj) {
+    return arrObj.serverToken === userObj.serverToken;
+  });
+
+  if (!alreadyAdded) {
+    userList.users.push({serverToken: userObj.serverToken, name: userObj.name});
+  }
+
+  console.log('user list', userList);
+
+  io.emit('user list', userList);
+};
+
+var removeFromUserList = function(serverToken) {
+  var userIndex = userList.users.findIndex(function(arrObj) {
+    return arrObj.serverToken === serverToken;
+  });
+
+  userList.users.splice(userIndex, 1);
+  io.emit('user list', userList);
+};
+
+
 
 io.on('connection', function(socket) {
   console.log('a user connected');
 
-  // TODO: get last 100 messages from database and add them to DOM
+  // get last 100 messages from database and add them to DOM
   redis.lrange('userMessages', 0, 100, function (err, messages) {
     socket.emit('initial message history', messages);
   });
@@ -54,6 +80,12 @@ io.on('connection', function(socket) {
 
       redis.get(`user:${token.localToken}`, function (err, result) {
 
+        if (!result) {
+          // if no token found - tell client to delete local token and get new one from server
+          socket.emit('invalid token');
+          return;
+        }
+
         if (result) {
           var storedSecret = JSON.parse(result).secret;
 
@@ -62,17 +94,21 @@ io.on('connection', function(socket) {
               // if invalid token - tell client to delete local token and get new one from server
               socket.emit('invalid token');
             }
-            // if valid token - do nothing
-          });
-        }
 
-        if (!result) {
-          // if no token found - tell client to delete local token and get new one from server
-          socket.emit('invalid token');
+            // if valid token - do nothing
+            console.log('payload', payload);
+
+
+            addToUserList({serverToken: serverToken, name: payload.name});
+
+          });
         }
 
       });
     } else {
+
+      // TODO: remake it as User class - server token as property
+
       // var name = chance.last() + chance.age();
       var avatar = chance.avatar() + '?d=retro';
       var name = animal.getId();
@@ -84,6 +120,7 @@ io.on('connection', function(socket) {
       };
       // var secret = crypto.randomBytes(256).toString('base64');
       var secret = crypto.randomBytes(256).toString('base64');
+
       serverToken = jwt.sign(payload, secret).toString();
 
       socket.emit('token', serverToken);
@@ -93,13 +130,8 @@ io.on('connection', function(socket) {
       redis.sadd('users', serverToken);
       redis.set(`user:${serverToken}`, JSON.stringify(payloadWithSecret));
 
-      // TODO:  store to database here
-      // token: serverToken,
 
-      // users: [name, name, name]
-      // use token as id
-      // user:token {"name":"Fred","age":25}
-
+      addToUserList({serverToken: serverToken, name: payload.name});
     }
   });
 
@@ -123,6 +155,7 @@ io.on('connection', function(socket) {
   });
 
   socket.on('disconnect', function(){
+    removeFromUserList(serverToken);
     console.log('user disconnected');
   });
 });

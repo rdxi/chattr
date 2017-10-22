@@ -17,16 +17,18 @@
         <div class="sidebar-users-title">
           Users online
         </div>
-        <div class="sidebar-user">Johnatan</div>
-        <div class="sidebar-user">Kate</div>
+        <div class="sidebar-users-items">
+          <!-- <div class="sidebar-user">Johnatan</div>
+          <div class="sidebar-user">Kate</div> -->
+        </div>
       </div>
-      <div class="sidebar-users sidebar-users--offline">
+      <!-- <div class="sidebar-users sidebar-users--offline">
         <div class="sidebar-users-title">
             Users offline
         </div>
         <div class="sidebar-user">Bobbert</div>
         <div class="sidebar-user">Very long person name weird too long</div>
-      </div>
+      </div> -->
     </div>
     <div class="main">
       <div class="main-title">
@@ -73,6 +75,10 @@
         <div class="main-message-image"><img src="{{image}}"></div>
       {{/image}}
     </div>
+  </script>
+
+  <script id="sidebar-user-template" type="text/template">
+    <div class="sidebar-user {{#offline}}sidebar-user--offline{{/offline}}">{{user}}</div>
   </script>
 </body>
 </html>

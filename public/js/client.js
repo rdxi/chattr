@@ -33,39 +33,28 @@ $(function () {
     if (items) {
       items.forEach(function(item) {
         var obj = JSON.parse(item);
-        renderMessage({
-          avatar: obj.avatar,
-          user: obj.name,
-          date: obj.date,
-          text: obj.text
-        });
+        renderMessage(obj);
       });
     }
   });
 
 
   socket.on('chat message', function(obj){
-
-    console.log(obj);
-
-    renderMessage({
-      avatar: obj.avatar,
-      user: obj.name,
-      date: obj.date,
-      text: obj.text
-    });
-
-    // var messages = $('.main-messages');
-
+    renderMessage(obj);
   });
 
-  var renderMessage = function(msg) {
-    var messagesContainer = $('.main-messages');
+  socket.on('user list', function(obj) {
+    renderSidebarUsers(obj);
+  });
 
-    var avatar = msg.avatar || '//www.gravatar.com/avatar/00000000000000000000000000000000';
-    var user = msg.user || 'anonymous';
-    var date = msg.date ? moment(msg.date).format("MMM Do, HH:mm") : moment().format("MMM Do, HH:mm");
-    var text = anchorme(msg.text) || '??no text??';
+  var renderMessage = function(obj) {
+    var messagesContainer = $('.main-messages');
+    var template = $('#message-template').html();
+
+    var avatar = obj.avatar || '//www.gravatar.com/avatar/00000000000000000000000000000000';
+    var user = obj.name || 'anonymous';
+    var date = obj.date ? moment(obj.date).format("MMM Do, HH:mm") : moment().format("MMM Do, HH:mm");
+    var text = anchorme(obj.text) || '??no text??';
 
 
     // TODO: auto-embed images
@@ -81,7 +70,6 @@ $(function () {
     // console.log(image);
 
 
-    var template = $('#message-template').html();
 
     var html = Mustache.render(template, {
       avatar: avatar,
@@ -94,5 +82,32 @@ $(function () {
     messagesContainer[0].scrollTop = messagesContainer[0].scrollHeight;
 
   };
+
+  var renderSidebarUsers = function(obj) {
+    var usersContainer = $('.sidebar-users-items').html('');
+
+    obj.users.forEach(function(user) {
+      renderSidebarUser(user);
+    });
+  };
+
+  var renderSidebarUser = function(msg) {
+    var usersContainer = $('.sidebar-users-items');
+    var template = $('#sidebar-user-template').html();
+
+    var user = msg.name;
+    var offline = msg.offline;
+
+    var html = Mustache.render(template, {
+      user: user,
+      offline: offline
+    });
+
+    usersContainer.append(html);
+  };
+
+  // // *** DELET THIS >_> ***
+  // window.renderSidebarUser = renderSidebarUser;
+
 
 });
