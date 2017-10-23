@@ -10,20 +10,25 @@ app.use(compression());
 const server = http.Server(app);
 const io = require('socket.io')(server);
 
+
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
 
-const chance = require('chance').Chance();
-const animal = require('animal-id');
+// const chance = require('chance').Chance();
+// const animal = require('animal-id');
 
 const jwt = require('jsonwebtoken');
 
-const Redis = require('ioredis');
-const redis = new Redis(process.env.REDIS_URL);
+const redis = require('./redis.js');
+// const Redis = require('ioredis');
+// const redis = new Redis(process.env.REDIS_URL);
 
 
-const crypto = require('crypto');
+// const crypto = require('crypto');
 // const bcryptjs = require('bcryptjs');
+// module.exports = {io: io, redis: redis};
+const User = require('./user.js');
+
 
 
 var sanitizeHtml = require('sanitize-html');
@@ -41,7 +46,7 @@ var addToUserList = function(userObj) {
     userList.users.push({serverToken: userObj.serverToken, name: userObj.name});
   }
 
-  console.log('user list', userList);
+  // console.log('user list', userList);
 
   io.emit('user list', userList);
 };
@@ -59,13 +64,14 @@ var removeFromUserList = function(serverToken) {
 
 io.on('connection', function(socket) {
   console.log('a user connected');
+  var user = new User();
 
   // get last 100 messages from database and add them to DOM
   redis.lrange('userMessages', 0, 100, function (err, messages) {
     socket.emit('initial message history', messages);
   });
 
-  var serverToken;
+  // var serverToken;
 
   // todo: store jwt on client in local storage
   // todo: send jwt on connection from client
@@ -76,7 +82,6 @@ io.on('connection', function(socket) {
   socket.on('hello', function(token) {
     // todo: move verify functions to separate module and test it
     if (token.localToken) {
-      serverToken = token.localToken;
 
       redis.get(`user:${token.localToken}`, function (err, result) {
 
@@ -95,49 +100,24 @@ io.on('connection', function(socket) {
               socket.emit('invalid token');
             }
 
-            // if valid token - do nothing
-            console.log('payload', payload);
+            // if valid token - add localToken to user
+            user.serverToken = token.localToken;
 
-
-            addToUserList({serverToken: serverToken, name: payload.name});
+            addToUserList({serverToken: user.serverToken, name: payload.name});
 
           });
         }
 
       });
     } else {
-
-      // TODO: remake it as User class - server token as property
-
-      // var name = chance.last() + chance.age();
-      var avatar = chance.avatar() + '?d=retro';
-      var name = animal.getId();
-
-      var payload = {
-        id: socket.id,
-        name: name,
-        avatar: avatar
-      };
-      // var secret = crypto.randomBytes(256).toString('base64');
-      var secret = crypto.randomBytes(256).toString('base64');
-
-      serverToken = jwt.sign(payload, secret).toString();
-
-      socket.emit('token', serverToken);
-
-      var payloadWithSecret = Object.assign({secret: secret}, payload);
-
-      redis.sadd('users', serverToken);
-      redis.set(`user:${serverToken}`, JSON.stringify(payloadWithSecret));
-
-
-      addToUserList({serverToken: serverToken, name: payload.name});
+      user.generateNewUser(socket);
+      addToUserList({serverToken: user.serverToken, name: user.payload.name});
     }
   });
 
 
   socket.on('chat message', function(msg){
-    var decoded = jwt.decode(serverToken);
+    var decoded = jwt.decode(user.serverToken);
     var sanitizedMsg = sanitizeHtml(msg, {allowedTags: ['a', 'img', 'b', 'strong', 'i', 'em']});
 
 
@@ -155,7 +135,7 @@ io.on('connection', function(socket) {
   });
 
   socket.on('disconnect', function(){
-    removeFromUserList(serverToken);
+    removeFromUserList(user.serverToken);
     console.log('user disconnected');
   });
 });
@@ -171,7 +151,6 @@ app.use('/', express.static(publicPath));
 server.listen(port, function() {
   console.log(`app is listening on port ${port}`);
 });
-
 
 
 
