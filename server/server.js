@@ -67,7 +67,7 @@ io.on('connection', function(socket) {
   var user = new User();
 
   // get last 100 messages from database and add them to DOM
-  redis.lrange('userMessages', 0, 100, function (err, messages) {
+  redis.lrange('userMessages', -100, -1, function (err, messages) {
     socket.emit('initial message history', messages);
   });
 
@@ -119,6 +119,12 @@ io.on('connection', function(socket) {
   socket.on('chat message', function(msg){
     var decoded = jwt.decode(user.serverToken);
     var sanitizedMsg = sanitizeHtml(msg, {allowedTags: ['a', 'img', 'b', 'strong', 'i', 'em']});
+
+    if (msg === '*delete all messages*') {
+      redis.del('userMessages');
+      io.emit('*delete all messages*');
+      return;
+    }
 
 
     var msgObj = {

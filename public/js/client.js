@@ -27,6 +27,7 @@ $(function () {
     return false;
   });
 
+  // todo: put all messages in dom inside js
   socket.on('initial message history', function(items) {
     console.log('initial messages: ', items);
 
@@ -36,6 +37,14 @@ $(function () {
         renderMessage(obj);
       });
     }
+  });
+
+  socket.on('*delete all messages*', function() {
+    $('.main-messages').html('');
+    renderMessage({
+      name: 'admin',
+      text: 'messages deleted'
+    });
   });
 
 
