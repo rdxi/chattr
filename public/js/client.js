@@ -1,3 +1,5 @@
+// TODO?: move functions to modules, add browserify and stuff?
+
 $(function () {
   var socket = io();
 
@@ -24,8 +26,14 @@ $(function () {
   $('form').submit(function(){
     var input = $('#user-message');
     var inputIsEmpty = input.val().trim() === '';
+    var tooManyCharacters = input.val().length > 1000;
 
     if (inputIsEmpty) return false;
+
+    if (tooManyCharacters) {
+      renderMessage({name: 'admin', text: 'Maximum message length is 1000 characters'});
+      return false;
+    }
 
     socket.emit('chat message', input.val());
     input.val('');
@@ -33,9 +41,11 @@ $(function () {
     return false;
   });
 
-  // todo: put all messages in dom inside js
+  // todo: put all messages in dom inside js, before rendering
   socket.on('initial message history', function(items) {
     console.log('initial messages: ', items);
+
+    $('.main-messages').html('');
 
     if (items) {
       items.forEach(function(item) {
@@ -62,7 +72,25 @@ $(function () {
     renderSidebarUsers(obj);
   });
 
+  var checkIfImageLink = function(text) {
+    var isImage = /(jpg|gif|png)$/;
+    var urlList = anchorme(text, {list:true});
+
+    var imageLink = urlList.find(function(el) {
+      return isImage.test(el.raw) === true;
+    });
+    console.log('imageLink', imageLink);
+    // return text;
+
+
+    return imageLink ? imageLink.raw : false;
+  };
+
   var renderMessage = function(obj) {
+    // attributes:[
+    //   {
+    //     value:"_blank"
+    //   }
     var messagesContainer = $('.main-messages');
     var template = $('#message-template').html();
 
@@ -70,12 +98,33 @@ $(function () {
     var user = obj.name || 'anonymous';
     var date = obj.date ? moment(obj.date).format("MMM Do, HH:mm") : moment().format("MMM Do, HH:mm");
     var text = anchorme(obj.text) || '??no text??';
+    var image = checkIfImageLink(obj.text) || null;
 
+    console.log('image', image);
+
+
+
+    // console.log('image', image);
+
+
+    // var urlList = anchorme(obj.text, {list:true});
+    // if (urlList.length > 0) {console.log(urlList[0].raw);}
+
+
+
+    // console.log(checkIfImageLink());
+
+    // console.log(urlList[0].raw);
 
     // TODO: auto-embed images
     // var image = $(text).siblings('a').filter(function() {
     //   return /(jpg|gif|png)$/.test($(this).attr('href'));
     // });
+
+    // console.log('text', $(text));
+
+
+    // isImage.test('url')
 
     // TODO?: add emojis button like slack  😀😗😙😑😮😯😴😛😕😟
     // make only 3 emojis: crying laugh, ok, and poop
@@ -90,7 +139,8 @@ $(function () {
       avatar: avatar,
       user: user,
       date: date,
-      text: text
+      text: text,
+      image: image
     });
 
     messagesContainer.append(html);
@@ -121,8 +171,6 @@ $(function () {
     usersContainer.append(html);
   };
 
-  // // *** DELET THIS >_> ***
-  // window.renderSidebarUser = renderSidebarUser;
 
 
 });

@@ -134,8 +134,20 @@ input, textarea, button {
   margin-left: 5px;
 }
 
-.main-message-text img {
-  max-height: 500px;
+.main-message-image {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-right: 20px;
+}
+
+.main-message-image img {
+  max-height: 250px;
+  overflow: hidden;
+  padding: 20px;
+  border: 1px solid #ccc;
+  background-color: rgb(232, 239, 232);
+
+  box-sizing: border-box;
 }
 
 .main-input {

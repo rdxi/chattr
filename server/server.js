@@ -74,11 +74,17 @@ io.on('connection', function(socket) {
     var decoded = jwt.decode(user.serverToken);
     var sanitizedMsg = sanitizeHtml(msg, {allowedTags: ['a', 'img', 'b', 'strong', 'i', 'em']});
 
+    if (msg.length > 1000) {
+      socket.emit('chat message', {name: 'admin', text:'Maximum message length is 1000 characters'});
+      return;
+    }
+
     if (msg === '*delete all messages*') {
       redis.del('userMessages');
       io.emit('*delete all messages*');
       return;
     }
+
 
     var msgObj = {
       text: sanitizedMsg,
