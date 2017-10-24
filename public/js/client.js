@@ -22,8 +22,14 @@ $(function () {
 
 
   $('form').submit(function(){
-    socket.emit('chat message', $('#user-message').val());
-    $('#user-message').val('');
+    var input = $('#user-message');
+    var inputIsEmpty = input.val().trim() === '';
+
+    if (inputIsEmpty) return false;
+
+    socket.emit('chat message', input.val());
+    input.val('');
+
     return false;
   });
 
