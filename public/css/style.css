@@ -91,7 +91,9 @@ input, textarea, button {
   box-sizing: border-box;
 
   flex-grow: 1;
+
   overflow: auto;
+  will-change: transform; /* to fix laggy scrolling of 'overflow:auto' elements in chrome  https://bugs.chromium.org/p/chromium/issues/detail?id=514303 */
 }
 
 .main-message {
@@ -141,7 +143,7 @@ input, textarea, button {
 }
 
 .main-message-image img {
-  max-height: 250px;
+  max-height: 300px;
   overflow: hidden;
   padding: 20px;
   border: 1px solid #ccc;
