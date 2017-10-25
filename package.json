@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "start": "node server/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "bsf": "browserify public/js/client.js | uglifyjs > public/js/bundle.js",
+    "start-watchify": "watchify public/js/client.js -v -o \"uglifyjs > public/js/bundle.js\"",
+    "start-nodemon": "nodemon server/server.js",
+    "watch": "concurrently --kill-others  \"npm run start-watchify\" \"npm run start-nodemon\""
   },
   "author": "",
   "license": "ISC",
@@ -22,5 +26,15 @@
     "jsonwebtoken": "^8.1.0",
     "sanitize-html": "^1.14.1",
     "socket.io": "^2.0.3"
+  },
+  "devDependencies": {
+    "anchorme": "^1.1.2",
+    "browserify": "^14.5.0",
+    "concurrently": "^3.5.0",
+    "jquery": "^3.2.1",
+    "moment": "^2.19.1",
+    "mustache": "^2.3.0",
+    "uglify-es": "^3.1.5",
+    "watchify": "^3.9.0"
   }
 }

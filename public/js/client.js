@@ -1,3 +1,10 @@
+var $ = require('jquery');
+var Mustache = require('mustache');
+var moment = require('moment');
+var anchorme = require('anchorme').default;
+
+var checkIfImageLink = require('./utils/checkifimagelink.js');
+
 // TODO?: move functions to modules, add browserify and stuff?
 
 $(function () {
@@ -43,7 +50,7 @@ $(function () {
 
   // todo: put all messages in dom inside js, before rendering
   socket.on('initial message history', function(items) {
-    console.log('initial messages: ', items);
+    // console.log('initial messages: ', items);
 
     $('.main-messages').html('');
 
@@ -72,19 +79,19 @@ $(function () {
     renderSidebarUsers(obj);
   });
 
-  var checkIfImageLink = function(text) {
-    var isImage = /(jpg|gif|png|svg)$/;
-    var urlList = anchorme(text, {list:true});
+  // var checkIfImageLink = function(text) {
+  //   var isImage = /(jpg|gif|png|svg)$/;
+  //   var urlList = anchorme(text, {list:true});
 
-    var imageLink = urlList.find(function(el) {
-      return isImage.test(el.raw) === true;
-    });
-    console.log('imageLink', imageLink);
-    // return text;
+  //   var imageLink = urlList.find(function(el) {
+  //     return isImage.test(el.raw) === true;
+  //   });
+  //   console.log('imageLink', imageLink);
+  //   // return text;
 
 
-    return imageLink ? imageLink.raw : false;
-  };
+  //   return imageLink ? imageLink.raw : false;
+  // };
 
   var renderMessage = function(obj) {
     // attributes:[
@@ -100,7 +107,7 @@ $(function () {
     var text = anchorme(obj.text) || '??no text??';
     var image = checkIfImageLink(obj.text) || null;
 
-    console.log('image', image);
+    // console.log('image', image);
 
 
 
