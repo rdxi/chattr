@@ -95,6 +95,7 @@ io.on('connection', function(socket) {
 
     var storedMsg = JSON.stringify(msgObj);
     redis.rpush('userMessages', storedMsg);
+    redis.ltrim('userMessages', -500, -1); // store only latest 500 messages because demo db has limited capacity
 
     io.emit('chat message', msgObj);
   });

@@ -149,7 +149,7 @@ $(function () {
   };
 
   var renderSidebarUsers = function(obj) {
-    var usersContainer = $('.sidebar-users-items').html('');
+    $('.sidebar-users-items').html('');
 
     obj.users.forEach(function(user) {
       renderSidebarUser(user);
