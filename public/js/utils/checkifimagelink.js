@@ -7,9 +7,6 @@ var checkIfImageLink = function(text) {
   var imageLink = urlList.find(function(el) {
     return isImage.test(el.raw) === true;
   });
-  // console.log('imageLink', imageLink);
-  // return text;
-
 
   return imageLink ? imageLink.raw : false;
 };
