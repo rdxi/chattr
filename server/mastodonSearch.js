@@ -2,7 +2,9 @@ var mastodonSearch = function(msg, mastodon) {
 
   return new Promise(function(resolve, reject) {
     // console.log(msg);
-    var mastodonSearchRegex = /^mastodon search/;
+    // var mastodonSearchRegex = /^mastodon search/;
+    var mastodonSearchRegex = /(^mastodon search)|(^mastodon find)/;
+    //
 
     if ( mastodonSearchRegex.test(msg) ) {
       // console.log('test passed');

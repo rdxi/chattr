@@ -46,22 +46,31 @@ input, textarea, button {
   border-right: 1px solid #285523;
 }
 
-.sidebar-users {
-  margin-bottom: 20px;
+.sidebar-current-user {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
 }
+
+.sidebar-current-user-avatar {
+  width: 40px;
+  height: 40px;
+}
+
+.sidebar-current-user-name {
+  padding-left: 10px;
+  padding-right: 10px;
+  box-sizing: border-box;
+}
+
+/* .sidebar-users { */
+  /* margin-bottom: 20px; */
+/* } */
 
 .sidebar-user {
   color: #fff;
   padding: 2px 10px 2px 10px;
 }
-
-.sidebar-user--offline {
-  opacity: 0.7;
-}
-
-/* .sidebar-users--offline .sidebar-user {
-  opacity: 0.7;
-} */
 
 .sidebar-users-title {
   margin-bottom: 5px;

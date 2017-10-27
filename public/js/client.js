@@ -80,6 +80,10 @@ $(function () {
     renderSidebarUsers(obj);
   });
 
+  socket.on('current user', function(obj) {
+    renderCurrentUser(obj);
+  });
+
   // var checkIfImageLink = function(text) {
   //   var isImage = /(jpg|gif|png|svg)$/;
   //   var urlList = anchorme(text, {list:true});
@@ -135,21 +139,32 @@ $(function () {
     });
   };
 
-  var renderSidebarUser = function(msg) {
+  var renderSidebarUser = function(user) {
     var usersContainer = $('.sidebar-users-items');
     var template = $('#sidebar-user-template').html();
 
-    var user = msg.name;
-    var offline = msg.offline;
-
     var html = Mustache.render(template, {
-      user: user,
-      offline: offline
+      user: user.name
     });
 
     usersContainer.append(html);
   };
 
+
+  var renderCurrentUser = function(user) {
+    var currentUserContainer = $('.sidebar-current-user');
+    var template = $('#sidebar-current-user-template').html();
+
+    console.log(user);
+    currentUserContainer.html(' ');
+
+    var html = Mustache.render(template, {
+      user: user.name,
+      avatar: user.avatar
+    });
+
+    currentUserContainer.append(html);
+  };
 
 
 });

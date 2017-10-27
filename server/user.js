@@ -32,6 +32,14 @@ class User {
 
   // }
 
+  addToSidebar() {
+
+  }
+
+  removeFromSidebar() {
+
+  }
+
   verifyUser(socket, token) {
     var self = this;
 

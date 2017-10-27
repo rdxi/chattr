@@ -13,57 +13,34 @@
 
   <div class="container">
     <div class="sidebar">
+      <div class="sidebar-current-user">
+        <!-- current user name and avatar go here -->
+      </div>
       <div class="sidebar-users">
         <div class="sidebar-users-title">
           Users online
         </div>
         <div class="sidebar-users-items">
-          <!-- <div class="sidebar-user">Johnatan</div>
-          <div class="sidebar-user">Kate</div> -->
+          <!-- list of online users go here -->
         </div>
       </div>
-      <!-- <div class="sidebar-users sidebar-users--offline">
-        <div class="sidebar-users-title">
-            Users offline
-        </div>
-        <div class="sidebar-user">Bobbert</div>
-        <div class="sidebar-user">Very long person name weird too long</div>
-      </div> -->
     </div>
     <div class="main">
       <div class="main-title">
         Chattr discussion
       </div>
       <div class="main-messages">
-        <!-- <div class="main-message">
-          <div class="main-message-avatar"><img src="http://www.gravatar.com/avatar/cd93653575932c775ae455c18e8b2874?d=retro" alt="avatar"></div>
-          <div class="main-message-user">Bobbert</div>
-          <div class="main-message-time">Oct 20th, 18:10</div>
-          <div class="main-message-text">Hello frien</div>
-        </div>
-
-        <div class="main-message">
-          <div class="main-message-avatar"><img src="http://www.gravatar.com/avatar/a2a2b6fccb725f6d1ee2c95c029d0b5b?d=retro" alt="avatar"></div>
-          <div class="main-message-user">Johnatan</div>
-          <div class="main-message-time">Oct 20th, 18:10</div>
-          <div class="main-message-text">farewell</div>
-        </div> -->
+        <!-- messages go here -->
       </div>
       <div class="main-input">
         <form action="">
           <input id="user-message" type="text" placeholder="your message">
         </form>
-        <!-- <textarea placeholder="your message"></textarea> -->
       </div>
     </div>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
-  <!-- <script src="js/libs/jquery-3.2.1.min.js"></script> -->
-  <!-- <script src="js/libs/mustache.min.js"></script> -->
-  <!-- <script src="js/libs/moment.min.js"></script> -->
-  <!-- <script src="js/libs/anchorme.min.js"></script> -->
-  <!-- <script src="js/client.js"></script> -->
   <script src="js/bundle.js"></script>
 
   <script id="message-template" type="text/template">
@@ -79,7 +56,14 @@
   </script>
 
   <script id="sidebar-user-template" type="text/template">
-    <div class="sidebar-user {{#offline}}sidebar-user--offline{{/offline}}">{{user}}</div>
+    <div class="sidebar-user">{{user}}</div>
+  </script>
+
+  <script id="sidebar-current-user-template" type="text/template">
+    <div class="sidebar-current-user-avatar">
+      <img src="{{avatar}}" alt="avatar">
+    </div>
+    <div class="sidebar-current-user-name">{{user}}</div>
   </script>
 </body>
 </html>

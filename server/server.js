@@ -39,10 +39,8 @@ var addToUserList = function(userObj) {
   });
 
   if (!alreadyAdded) {
-    userList.users.push({serverToken: userObj.serverToken, name: userObj.name});
+    userList.users.push({serverToken: userObj.serverToken, name: userObj.payload.name});
   }
-
-  // console.log('user list', userList);
 
   io.emit('user list', userList);
 };
@@ -52,7 +50,9 @@ var removeFromUserList = function(serverToken) {
     return arrObj.serverToken === serverToken;
   });
 
+  console.log('*** userList: ', userList);
   userList.users.splice(userIndex, 1);
+  console.log('*** userList: ', userList);
   io.emit('user list', userList);
 };
 
@@ -60,18 +60,23 @@ var removeFromUserList = function(serverToken) {
 
 io.on('connection', function(socket) {
   var user = new User();
-
   // verify returning user or generate new user
   socket.on('hello', function(token) {
     if (token.localToken) {
       user.verifyUser(socket, token)
-        .then(() => addToUserList({serverToken: user.serverToken, name: user.payload.name}))
-        .catch((err) => console.log(err));
+      .then(() => {
+        addToUserList({serverToken: user.serverToken, payload: user.payload});
+        socket.emit('current user', {name: user.payload.name, avatar: user.payload.avatar});
+      })
+      .catch((err) => console.log(err));
 
     } else {
       user.generateNewUser(socket)
-        .then(() => addToUserList({serverToken: user.serverToken, name: user.payload.name}))
-        .catch((err) => console.log(err));
+      .then(() => {
+        addToUserList({serverToken: user.serverToken, payload: user.payload});
+        socket.emit('current user', {name: user.payload.name, avatar: user.payload.avatar});
+      })
+      .catch((err) => console.log(err));
     }
   });
 
@@ -116,14 +121,14 @@ io.on('connection', function(socket) {
 
     // test if message is for searchBot
     mastodonSearch(msg, mastodon).then(function(result) {
-      console.log('*** result:', result);
+      // console.log('*** result:', result);
 
       if (result) {
         var sanitizedText = sanitizeHtml(result.text);
 
         msgObj.name = 'Mastodon bot';
         msgObj.avatar = '';
-        msgObj.text = `${result.linkToPost} ${sanitizedText} ${result.image}`;
+        msgObj.text = `${result.linkToPost} <br> ${sanitizedText} ${result.image}`;
 
         // repeating code
         var storedMsg = JSON.stringify(msgObj);

@@ -20,6 +20,13 @@ class MastodonStream {
         messageDate = Date.now();
 
         var displayName = msg.data.account ? msg.data.account.display_name : msg.data.account;
+        var username = msg.data.account ? msg.data.account.username : msg.data.account;
+
+        if (!displayName) {
+          // if user don't have display name, show username instead
+          displayName = username;
+        }
+
         var msgText = sanitizeHtml(msg.data.content);
         console.log(displayName, 'said: ', sanitizeHtml(msg.data.content));
 
@@ -28,7 +35,7 @@ class MastodonStream {
         var msgLink = msg.data.url;
         var textWithAttachments = `${msgLink} ${msgText} ${msgAttachments}`;
 
-        console.log('*** msgAttachments ', msgAttachments);
+        // console.log('*** msgAttachments ', msgAttachments);
 
         if (!displayName) {
           console.log('*** data when undefined name: ', msg.data);
