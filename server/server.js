@@ -34,14 +34,7 @@ var mastodonStream = new MastodonStream(mastodon, io, 60*1000);
 var userList = {users: []};
 
 var addToUserList = function(userObj) {
-  var alreadyAdded = userList.users.find(function(arrObj) {
-    return arrObj.serverToken === userObj.serverToken;
-  });
-
-  if (!alreadyAdded) {
-    userList.users.push({serverToken: userObj.serverToken, name: userObj.payload.name});
-  }
-
+  userList.users.push({serverToken: userObj.serverToken, name: userObj.payload.name});
   io.emit('user list', userList);
 };
 
@@ -50,29 +43,33 @@ var removeFromUserList = function(serverToken) {
     return arrObj.serverToken === serverToken;
   });
 
-  console.log('*** userList: ', userList);
-  userList.users.splice(userIndex, 1);
-  console.log('*** userList: ', userList);
+  if (userIndex > -1) {
+    userList.users.splice(userIndex, 1);
+  }
+
   io.emit('user list', userList);
 };
 
 
 
 io.on('connection', function(socket) {
-  var user = new User();
+  var user = new User(socket);
+
   // verify returning user or generate new user
   socket.on('hello', function(token) {
     if (token.localToken) {
-      user.verifyUser(socket, token)
+      user.verifyUser(token)
       .then(() => {
+        // user.addToSidebar();
         addToUserList({serverToken: user.serverToken, payload: user.payload});
         socket.emit('current user', {name: user.payload.name, avatar: user.payload.avatar});
       })
       .catch((err) => console.log(err));
 
     } else {
-      user.generateNewUser(socket)
+      user.generateNewUser()
       .then(() => {
+        // user.addToSidebar();
         addToUserList({serverToken: user.serverToken, payload: user.payload});
         socket.emit('current user', {name: user.payload.name, avatar: user.payload.avatar});
       })

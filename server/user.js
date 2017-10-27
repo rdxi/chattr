@@ -6,9 +6,8 @@ const crypto = require('crypto');
 
 
 class User {
-  constructor () {
-    // this.userList = {users: []};
-
+  constructor (socket) {
+    this.socket = socket;
     this.serverToken;
     this.payload;
   }
@@ -33,14 +32,19 @@ class User {
   // }
 
   addToSidebar() {
+    var self = this;
 
+    self.socket.emit('add to sidebar', {name: self.payload.name});
+    self.socket.broadcast.emit('add to sidebar', {name: self.payload.name});
   }
 
   removeFromSidebar() {
-
+    var self = this;
+    self.socket.emit('remove from sidebar', {name: self.payload.name});
+    self.socket.broadcast.emit('add to sidebar', {name: self.payload.name});
   }
 
-  verifyUser(socket, token) {
+  verifyUser(token) {
     var self = this;
 
     return new Promise(function(resolve, reject) {
@@ -49,7 +53,7 @@ class User {
 
         // no token found - tell client to delete local token and get new one from server
         if (!result) {
-          socket.emit('invalid token');
+          self.socket.emit('invalid token');
           reject('no token found');
           return;
         }
@@ -59,7 +63,7 @@ class User {
 
           // invalid token - tell client to delete local token and get new one from server
           if (err) {
-            socket.emit('invalid token');
+            self.socket.emit('invalid token');
             reject('token verification failed');
             return;
           }
@@ -75,7 +79,7 @@ class User {
 
   }
 
-  generateNewUser(socket) {
+  generateNewUser() {
     var self = this;
 
     return new Promise(function(resolve, reject) {
@@ -83,7 +87,7 @@ class User {
       var name = animal.getId();
       var secret = crypto.randomBytes(256).toString('base64');
       var payload = {
-        id: socket.id,
+        id: self.socket.id,
         name: name,
         avatar: avatar
       };
@@ -94,7 +98,7 @@ class User {
 
 
       // token without secret - send to user
-      socket.emit('token', self.serverToken);
+      self.socket.emit('token', self.serverToken);
 
       // token with secret - add to db
       redis.set(`user:${self.serverToken}`, JSON.stringify(payloadWithSecret));

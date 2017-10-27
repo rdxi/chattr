@@ -2,9 +2,12 @@ var $ = require('jquery');
 var Mustache = require('mustache');
 var moment = require('moment');
 var anchorme = require('anchorme').default;
+var _ = require('lodash');
 
 var checkIfImageLink = require('./utils/checkifimagelink.js');
 var polyfillArrayFind = require('./utils/polyfillarrayfind.js')();
+
+var sidebarUsers = [];
 
 // TODO?: move functions to modules, add browserify and stuff?
 
@@ -53,14 +56,16 @@ $(function () {
   socket.on('initial message history', function(items) {
     // console.log('initial messages: ', items);
 
-    $('.main-messages').html('');
 
-    if (items) {
-      items.forEach(function(item) {
-        var obj = JSON.parse(item);
-        renderMessage(obj);
-      });
-    }
+    $('.main-messages').html('');
+    renderInitialMessages(items);
+
+    // if (items) {
+    //   items.forEach(function(item) {
+    //     var obj = JSON.parse(item);
+    //     renderMessage(obj);
+    //   });
+    // }
   });
 
   socket.on('*delete all messages*', function() {
@@ -77,26 +82,27 @@ $(function () {
   });
 
   socket.on('user list', function(obj) {
-    renderSidebarUsers(obj);
+    renderSidebarUsers(obj.users);
   });
 
   socket.on('current user', function(obj) {
     renderCurrentUser(obj);
   });
 
-  // var checkIfImageLink = function(text) {
-  //   var isImage = /(jpg|gif|png|svg)$/;
-  //   var urlList = anchorme(text, {list:true});
+  // socket.on('add to sidebar', function(obj) {
+  //   sidebarUsers.push(obj.name);
+  //   renderSidebarUsers(sidebarUsers);
+  // });
 
-  //   var imageLink = urlList.find(function(el) {
-  //     return isImage.test(el.raw) === true;
-  //   });
-  //   console.log('imageLink', imageLink);
-  //   // return text;
+  // socket.on('remove from sidebar', function(obj) {
+  //   var index = sidebarUsers.indexOf(obj.name);
 
+  //   if (index > -1) {
+  //     sidebarUsers.splice(index, 1);
+  //   }
 
-  //   return imageLink ? imageLink.raw : false;
-  // };
+  //   renderSidebarUsers(sidebarUsers);
+  // });
 
   var renderMessage = function(obj) {
     var messagesContainer = $('.main-messages');
@@ -131,24 +137,60 @@ $(function () {
 
   };
 
-  var renderSidebarUsers = function(obj) {
-    $('.sidebar-users-items').html('');
+  // todo lots of duplicate code, what do?
+  var renderInitialMessages = function(objList) {
+    var html = '';
+    var messagesContainer = $('.main-messages');
+    var template = $('#message-template').html();
 
-    obj.users.forEach(function(user) {
-      renderSidebarUser(user);
+    objList.forEach(function(stringObj) {
+      var obj = JSON.parse(stringObj);
+      var avatar = obj.avatar || '//www.gravatar.com/avatar/00000000000000000000000000000000';
+      var user = obj.name || 'anonymous';
+      var date = obj.date ? moment(obj.date).format('MMM Do, HH:mm') : moment().format('MMM Do, HH:mm');
+      var text = anchorme(obj.text, {attributes: [{name: 'target', value :'_blank'}]}) || '??no text??';
+      var image = checkIfImageLink(obj.text) || null;
+
+      html += Mustache.render(template, {
+        avatar: avatar,
+        user: user,
+        date: date,
+        text: text,
+        image: image
+      });
     });
+
+    messagesContainer.append(html);
+    messagesContainer[0].scrollTop = messagesContainer[0].scrollHeight;
+
   };
 
-  var renderSidebarUser = function(user) {
+  var renderSidebarUsers = function(userList) {
+    var html = '';
     var usersContainer = $('.sidebar-users-items');
     var template = $('#sidebar-user-template').html();
+    var uniqueUserList = _.uniqBy(userList, 'name');
 
-    var html = Mustache.render(template, {
-      user: user.name
+    usersContainer.html('');
+
+
+    uniqueUserList.forEach(function(user) {
+      html += Mustache.render(template, {user: user.name});
     });
 
     usersContainer.append(html);
   };
+
+  // var renderSidebarUser = function(user) {
+  //   var usersContainer = $('.sidebar-users-items');
+  //   var template = $('#sidebar-user-template').html();
+
+  //   var html = Mustache.render(template, {
+  //     user: user.name
+  //   });
+
+  //   usersContainer.append(html);
+  // };
 
 
   var renderCurrentUser = function(user) {
