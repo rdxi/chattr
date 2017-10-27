@@ -1,7 +1,7 @@
 var anchorme = require('anchorme').default;
 
 var checkIfImageLink = function(text) {
-  var isImage = /(jpg|gif|png|svg)$/;
+  var isImage = /(jpg|jpeg|gif|png|svg)$/;
   var urlList = anchorme(text, {list:true});
 
   var imageLink = urlList.find(function(el) {

@@ -25,7 +25,7 @@ var mastodon = new Mastodon({
   access_token: 'fd8ecb9adb8860a46cc78fbeb756c94fab958693bffa1d230a4960dcbc2f009d'
 });
 
-var mastodonStream = new MastodonStream(mastodon, 60*1000);
+var mastodonStream = new MastodonStream(mastodon, io, 60*1000);
 // /move this to separate module
 
 
@@ -82,6 +82,17 @@ io.on('connection', function(socket) {
 
   // send messages to users and store to db
   socket.on('chat message', function(msg){
+
+    // 1. decode serverToken to get name, avatar
+    // 2. sanitize message
+    // 3. check if message is above character limit
+    // 4. check if its *delete all messages*
+    // 5. create new obj with sanitized message, user.name, user.avatar, date
+    // 6. check if message is for searchbot
+    // 7. store message in db
+    // 8. emit message to all users
+
+
     var decoded = jwt.decode(user.serverToken);
     var sanitizedMsg = sanitizeHtml(msg, {allowedTags: ['a', 'img', 'b', 'strong', 'i', 'em']});
 
@@ -112,19 +123,25 @@ io.on('connection', function(socket) {
 
         msgObj.name = 'Mastodon bot';
         msgObj.avatar = '';
-        msgObj.text = `${sanitizedText} ${result.image}`;
+        msgObj.text = `${result.linkToPost} ${sanitizedText} ${result.image}`;
+
+        // repeating code
+        var storedMsg = JSON.stringify(msgObj);
+        redis.rpush('userMessages', storedMsg);
+        redis.ltrim('userMessages', -500, -1); // store only latest 500 messages because demo db has limited capacity
+
         io.emit('chat message', msgObj);
       } else {
 
         // bug - sends admin message even if it wasnt mastodon search
-        // msgObj.text = 'Nothing found';
-        // msgObj.name = 'admin';
-        // msgObj.avatar = '';
-        // io.emit('chat message', msgObj);
+        msgObj.text = 'Nothing found';
+        msgObj.name = 'Mastodon bot';
+        msgObj.avatar = '';
+        io.emit('chat message', msgObj);
       }
-    });
+    }).catch((err) => console.log(err));
 
-
+    // repeating code
     var storedMsg = JSON.stringify(msgObj);
     redis.rpush('userMessages', storedMsg);
     redis.ltrim('userMessages', -500, -1); // store only latest 500 messages because demo db has limited capacity

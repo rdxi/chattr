@@ -4,6 +4,7 @@ var moment = require('moment');
 var anchorme = require('anchorme').default;
 
 var checkIfImageLink = require('./utils/checkifimagelink.js');
+var polyfillArrayFind = require('./utils/polyfillarrayfind.js')();
 
 // TODO?: move functions to modules, add browserify and stuff?
 
@@ -94,44 +95,15 @@ $(function () {
   // };
 
   var renderMessage = function(obj) {
-    // attributes:[
-    //   {
-    //     value:"_blank"
-    //   }
     var messagesContainer = $('.main-messages');
     var template = $('#message-template').html();
 
     var avatar = obj.avatar || '//www.gravatar.com/avatar/00000000000000000000000000000000';
     var user = obj.name || 'anonymous';
-    var date = obj.date ? moment(obj.date).format("MMM Do, HH:mm") : moment().format("MMM Do, HH:mm");
-    var text = anchorme(obj.text) || '??no text??';
+    var date = obj.date ? moment(obj.date).format('MMM Do, HH:mm') : moment().format('MMM Do, HH:mm');
+    var text = anchorme(obj.text, {attributes: [{name: 'target', value :'_blank'}]}) || '??no text??';
     var image = checkIfImageLink(obj.text) || null;
 
-    // console.log('image', image);
-
-
-
-    // console.log('image', image);
-
-
-    // var urlList = anchorme(obj.text, {list:true});
-    // if (urlList.length > 0) {console.log(urlList[0].raw);}
-
-
-
-    // console.log(checkIfImageLink());
-
-    // console.log(urlList[0].raw);
-
-    // TODO: auto-embed images
-    // var image = $(text).siblings('a').filter(function() {
-    //   return /(jpg|gif|png)$/.test($(this).attr('href'));
-    // });
-
-    // console.log('text', $(text));
-
-
-    // isImage.test('url')
 
     // TODO?: add emojis button like slack  😀😗😙😑😮😯😴😛😕😟
     // make only 3 emojis: crying laugh, ok, and poop

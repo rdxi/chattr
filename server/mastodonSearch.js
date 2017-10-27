@@ -18,19 +18,23 @@ var mastodonSearch = function(msg, mastodon) {
         var text = response.data[0].content;
         var image = (response.data[0].media_attachments && response.data[0].media_attachments.length > 0) ? response.data[0].media_attachments[0].preview_url : '';
 
+        var linkToPost = response.data[0].url;
 
-        console.log('***media attachments***', response.data[0].media_attachments);
+
+        // console.log('***media attachments***', response.data[0].media_attachments);
+
+        console.log('*** response.data', response.data[0]);
 
 
-        resolve({text: text, image: image});
+        resolve({text: text, image: image, linkToPost: linkToPost});
       });
     } else {
-      resolve(false);
+      reject('not mastodon search');
     }
 
   });
 
 
-}
+};
 
 module.exports = mastodonSearch;

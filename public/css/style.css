@@ -75,6 +75,8 @@ input, textarea, button {
   flex-direction: column;
   flex-grow: 1;
   display: flex;
+
+  width: 100%; /* IE fix */
 }
 
 .main-title {
