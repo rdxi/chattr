@@ -7,7 +7,6 @@ var _ = require('lodash');
 var checkIfImageLink = require('./utils/checkifimagelink.js');
 var polyfillArrayFind = require('./utils/polyfillarrayfind.js')();
 
-var sidebarUsers = [];
 
 // TODO?: move functions to modules, add browserify and stuff?
 
@@ -208,5 +207,16 @@ $(function () {
     currentUserContainer.append(html);
   };
 
+
+  var toggleSidebar = function() {
+    var sidebarToggle = $('.sidebar-toggle');
+    var sidebar = $('.sidebar');
+
+    sidebarToggle.on('click', function() {
+      sidebar.toggleClass('sidebar--visible');
+    });
+  };
+
+  toggleSidebar();
 
 });

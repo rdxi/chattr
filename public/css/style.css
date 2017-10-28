@@ -46,6 +46,40 @@ input, textarea, button {
   border-right: 1px solid #285523;
 }
 
+.sidebar-toggle {
+  display: none;
+}
+
+@media (max-width: 568px) {
+  .sidebar-toggle {
+    z-index: 10;
+    display: block;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 30px;
+    height: 30px;
+  }
+
+  .sidebar {
+    z-index: 5;
+    width: 100%;
+    position: absolute;
+    left: 0;
+
+    transform: translateX(-100%);
+    transition: 0.2s transform;
+
+    max-height: 100%;
+    overflow: auto;
+  }
+
+  .sidebar--visible {
+    transform: translateX(0);
+  }
+}
+
+
 .sidebar-current-user {
   display: flex;
   align-items: center;
@@ -62,10 +96,6 @@ input, textarea, button {
   padding-right: 10px;
   box-sizing: border-box;
 }
-
-/* .sidebar-users { */
-  /* margin-bottom: 20px; */
-/* } */
 
 .sidebar-user {
   color: #fff;
