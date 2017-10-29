@@ -8,7 +8,9 @@ var checkIfImageLink = require('./utils/checkifimagelink.js');
 var polyfillArrayFind = require('./utils/polyfillarrayfind.js')();
 
 
-// TODO?: move functions to modules, add browserify and stuff?
+// TODO?: add emojis button like slack  😀😗😙😑😮😯😴😛😕😟
+// make only 3 emojis: crying laugh, ok, and poop
+// https://unicode.org/emoji/charts/full-emoji-list.html 💩💩💩
 
 $(function () {
   var socket = io();
@@ -41,7 +43,7 @@ $(function () {
     if (inputIsEmpty) return false;
 
     if (tooManyCharacters) {
-      renderMessage({name: 'admin', text: 'Maximum message length is 1000 characters'});
+      renderMessages({name: 'admin', text: 'Maximum message length is 1000 characters'});
       return false;
     }
 
@@ -53,23 +55,13 @@ $(function () {
 
   // todo: put all messages in dom inside js, before rendering
   socket.on('initial message history', function(items) {
-    // console.log('initial messages: ', items);
-
-
     $('.main-messages').html('');
-    renderInitialMessages(items);
-
-    // if (items) {
-    //   items.forEach(function(item) {
-    //     var obj = JSON.parse(item);
-    //     renderMessage(obj);
-    //   });
-    // }
+    renderMessages(items);
   });
 
   socket.on('*delete all messages*', function() {
     $('.main-messages').html('');
-    renderMessage({
+    renderMessages({
       name: 'admin',
       text: 'messages deleted'
     });
@@ -77,7 +69,7 @@ $(function () {
 
 
   socket.on('chat message', function(obj){
-    renderMessage(obj);
+    renderMessages(obj);
   });
 
   socket.on('user list', function(obj) {
@@ -88,80 +80,32 @@ $(function () {
     renderCurrentUser(obj);
   });
 
-  // socket.on('add to sidebar', function(obj) {
-  //   sidebarUsers.push(obj.name);
-  //   renderSidebarUsers(sidebarUsers);
-  // });
-
-  // socket.on('remove from sidebar', function(obj) {
-  //   var index = sidebarUsers.indexOf(obj.name);
-
-  //   if (index > -1) {
-  //     sidebarUsers.splice(index, 1);
-  //   }
-
-  //   renderSidebarUsers(sidebarUsers);
-  // });
-
-  var renderMessage = function(obj) {
-    var messagesContainer = $('.main-messages');
-    var template = $('#message-template').html();
-
-    var avatar = obj.avatar || '//www.gravatar.com/avatar/00000000000000000000000000000000';
-    var user = obj.name || 'anonymous';
-    var date = obj.date ? moment(obj.date).format('MMM Do, HH:mm') : moment().format('MMM Do, HH:mm');
-    var text = anchorme(obj.text, {attributes: [{name: 'target', value :'_blank'}]}) || '??no text??';
-    var image = checkIfImageLink(obj.text) || null;
-
-
-    // TODO?: add emojis button like slack  😀😗😙😑😮😯😴😛😕😟
-    // make only 3 emojis: crying laugh, ok, and poop
-    // https://unicode.org/emoji/charts/full-emoji-list.html 💩💩💩
-
-    // var image = $(text);
-    // console.log(image);
-
-
-
-    var html = Mustache.render(template, {
-      avatar: avatar,
-      user: user,
-      date: date,
-      text: text,
-      image: image
-    });
-
-    messagesContainer.append(html);
-    messagesContainer[0].scrollTop = messagesContainer[0].scrollHeight;
-
-  };
-
-  // todo lots of duplicate code, what do?
-  var renderInitialMessages = function(objList) {
+  var renderMessages = function(messages) {
     var html = '';
     var messagesContainer = $('.main-messages');
     var template = $('#message-template').html();
 
-    objList.forEach(function(stringObj) {
+    // if single message - put it in array to reuse parsing code below
+    if (!Array.isArray(messages)) {
+      var arr = [];
+      arr.push(JSON.stringify(messages));
+      messages = arr;
+    }
+
+    messages.forEach(function(stringObj) {
       var obj = JSON.parse(stringObj);
-      var avatar = obj.avatar || '//www.gravatar.com/avatar/00000000000000000000000000000000';
-      var user = obj.name || 'anonymous';
-      var date = obj.date ? moment(obj.date).format('MMM Do, HH:mm') : moment().format('MMM Do, HH:mm');
-      var text = anchorme(obj.text, {attributes: [{name: 'target', value :'_blank'}]}) || '??no text??';
-      var image = checkIfImageLink(obj.text) || null;
 
       html += Mustache.render(template, {
-        avatar: avatar,
-        user: user,
-        date: date,
-        text: text,
-        image: image
+        avatar: obj.avatar || '//www.gravatar.com/avatar/00000000000000000000000000000000',
+        user: obj.name || 'anonymous',
+        date: obj.date ? moment(obj.date).format('MMM Do, HH:mm') : moment().format('MMM Do, HH:mm'),
+        text: anchorme(obj.text, {attributes: [{name: 'target', value :'_blank'}]}) || '??no text??',
+        image: checkIfImageLink(obj.text) || null
       });
     });
 
     messagesContainer.append(html);
     messagesContainer[0].scrollTop = messagesContainer[0].scrollHeight;
-
   };
 
   var renderSidebarUsers = function(userList) {
@@ -172,7 +116,6 @@ $(function () {
 
     usersContainer.html('');
 
-
     uniqueUserList.forEach(function(user) {
       html += Mustache.render(template, {user: user.name});
     });
@@ -180,23 +123,10 @@ $(function () {
     usersContainer.append(html);
   };
 
-  // var renderSidebarUser = function(user) {
-  //   var usersContainer = $('.sidebar-users-items');
-  //   var template = $('#sidebar-user-template').html();
-
-  //   var html = Mustache.render(template, {
-  //     user: user.name
-  //   });
-
-  //   usersContainer.append(html);
-  // };
-
-
   var renderCurrentUser = function(user) {
     var currentUserContainer = $('.sidebar-current-user');
     var template = $('#sidebar-current-user-template').html();
 
-    console.log(user);
     currentUserContainer.html(' ');
 
     var html = Mustache.render(template, {
