@@ -144,6 +144,9 @@ input, textarea, button {
   padding-left: 50px;
 
   word-break: break-all;
+
+  /* non standard for Chrome, to fix japanese word overflowing */
+  word-break: break-word;
 }
 
 .main-message-avatar {

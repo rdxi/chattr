@@ -5,11 +5,12 @@
   "main": "index.js",
   "scripts": {
     "start": "node server/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "bsf": "browserify public/js/client.js | uglifyjs > public/js/bundle.js",
+    "test": "tape public/js/*.test.js | tap-spec",
+    "test-watch": "tape-watch public/js/*.test.js -p tap-spec",
+    "build-client-js": "browserify public/js/client.js | uglifyjs > public/js/bundle.js",
     "start-watchify": "watchify public/js/client.js -v -o \"uglifyjs > public/js/bundle.js\"",
     "start-nodemon": "nodemon server/server.js",
-    "watch": "concurrently --kill-others  \"npm run start-watchify\" \"npm run start-nodemon\""
+    "watch": "concurrently --timestamp-format \"HH:mm:ss\" --prefix \"{time} [{index}]\"  --kill-others  \"npm run start-watchify\" \"npm run start-nodemon\""
   },
   "author": "",
   "license": "ISC",
@@ -34,9 +35,15 @@
     "browserify": "^14.5.0",
     "concurrently": "^3.5.0",
     "jquery": "^3.2.1",
+    "jsdom": "^11.3.0",
+    "mock-socket": "^7.0.0",
     "moment": "^2.19.1",
     "mustache": "^2.3.0",
     "nodemon": "^1.12.1",
+    "proxyquire": "^1.8.0",
+    "tap-spec": "^4.1.1",
+    "tape": "^4.8.0",
+    "tape-watch": "^2.3.0",
     "uglify-es": "^3.1.5",
     "watchify": "^3.9.0"
   }

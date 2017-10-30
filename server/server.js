@@ -163,3 +163,6 @@ app.use('/', express.static(publicPath));
 server.listen(port, function() {
   console.log(`app is listening on port ${port}`);
 });
+
+
+module.exports = {app: app};
