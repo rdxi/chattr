@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 const redis = require('./redis.js');
 const crypto = require('crypto');
 
+const userList = require('./userList.js');
+
 
 class User {
   constructor (socket) {
@@ -12,36 +14,28 @@ class User {
     this.payload;
   }
 
-  // addUserToList (userObj) {
+  addToUserList (userObj) {
+    userList.users.push({serverToken: userObj.serverToken, name: userObj.payload.name});
 
-  //   var alreadyAdded = this.userList.users.find(function(arrObj) {
-  //     return arrObj.serverToken === userObj.serverToken;
-  //   });
-
-  //   if (!alreadyAdded) {
-  //     this.userList.users.push({serverToken: userObj.serverToken, name: userObj.name});
-  //   }
-
-  //   console.log('user list', this.userList);
-
-  //   io.emit('user list', this.userList);
-  // }
-
-  // removeUserFromList () {
-
-  // }
-
-  addToSidebar() {
-    var self = this;
-
-    self.socket.emit('add to sidebar', {name: self.payload.name});
-    self.socket.broadcast.emit('add to sidebar', {name: self.payload.name});
+    this.socket.emit('user list', userList);
+    this.socket.broadcast.emit('user list', userList);
   }
 
-  removeFromSidebar() {
-    var self = this;
-    self.socket.emit('remove from sidebar', {name: self.payload.name});
-    self.socket.broadcast.emit('add to sidebar', {name: self.payload.name});
+  removeFromUserList (serverToken) {
+    var userIndex = userList.users.findIndex(function(arrObj) {
+      return arrObj.serverToken === serverToken;
+    });
+
+    if (userIndex > -1) {
+      userList.users.splice(userIndex, 1);
+    }
+
+    this.socket.emit('user list', userList);
+    this.socket.broadcast.emit('user list', userList);
+  }
+
+  sendCurrentUser() {
+    this.socket.emit('current user', {name: this.payload.name, avatar: this.payload.avatar});
   }
 
   verifyUser(token) {
@@ -71,6 +65,10 @@ class User {
           // valid token - add localToken to user
           self.payload = payload;
           self.serverToken = token.localToken;
+
+          self.addToUserList({serverToken: self.serverToken, payload: self.payload});
+          self.sendCurrentUser();
+
           resolve('token verified successfully');
         });
 
@@ -96,7 +94,6 @@ class User {
       self.payload = payload;
       self.serverToken = jwt.sign(payload, secret).toString();
 
-
       // token without secret - send to user
       self.socket.emit('token', self.serverToken);
 
@@ -104,13 +101,12 @@ class User {
       redis.set(`user:${self.serverToken}`, JSON.stringify(payloadWithSecret));
       redis.sadd('users', self.serverToken);
 
+      self.addToUserList({serverToken: self.serverToken, payload: self.payload});
+      self.sendCurrentUser();
+
       resolve('user generated successfully');
-
     });
-
   }
-
 }
-
 
 module.exports = User;

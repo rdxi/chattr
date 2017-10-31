@@ -1,12 +1,7 @@
 var $ = require('jquery');
-var Mustache = require('mustache');
-var moment = require('moment');
-var anchorme = require('anchorme').default;
-var _ = require('lodash');
-
-var renderMessages = require('./renderMessages.js').renderMessages;
-var checkIfImageLink = require('./utils/checkifimagelink.js');
-var polyfillArrayFind = require('./utils/polyfillarrayfind.js')();
+var renderMessages = require('./renderHtml.js').renderMessages;
+var renderSidebarUsers = require('./renderHtml.js').renderSidebarUsers;
+var renderCurrentUser = require('./renderHtml.js').renderCurrentUser;
 
 // TODO?: add emojis button like slack  😀😗😙😑😮😯😴😛😕😟
 // make only 3 emojis: crying laugh, ok, and poop
@@ -73,36 +68,6 @@ $('form').on('submit', function(){
   return false;
 });
 
-var renderSidebarUsers = function(userList) {
-  var html = '';
-  var usersContainer = $('.sidebar-users-items');
-  var template = $('#sidebar-user-template').html();
-  var uniqueUserList = _.uniqBy(userList, 'name');
-
-  usersContainer.html('');
-
-  uniqueUserList.forEach(function(user) {
-    html += Mustache.render(template, {user: user.name});
-  });
-
-  usersContainer.append(html);
-};
-
-var renderCurrentUser = function(user) {
-  var currentUserContainer = $('.sidebar-current-user');
-  var template = $('#sidebar-current-user-template').html();
-
-  currentUserContainer.html(' ');
-
-  var html = Mustache.render(template, {
-    user: user.name,
-    avatar: user.avatar
-  });
-
-  currentUserContainer.append(html);
-};
-
-
 var toggleSidebar = function() {
   var sidebarToggle = $('.sidebar-toggle');
   var sidebar = $('.sidebar');
@@ -113,39 +78,3 @@ var toggleSidebar = function() {
 };
 
 toggleSidebar();
-
-
-
-
-// var renderMessages = function(messages) {
-//   var html = '';
-//   var messagesContainer = $('.main-messages');
-//   var template = $('#message-template').html();
-
-//   console.log('***renderMessages', window.document.documentElement.innerHTML);
-
-//   // if single message - put it in array to reuse parsing code below
-//   if (!Array.isArray(messages)) {
-//     var arr = [];
-//     arr.push(JSON.stringify(messages));
-//     messages = arr;
-//   }
-
-//   messages.forEach(function(stringObj) {
-//     var obj = JSON.parse(stringObj);
-
-//     html += Mustache.render(template, {
-//       avatar: obj.avatar || '//www.gravatar.com/avatar/00000000000000000000000000000000',
-//       user: obj.name || 'anonymous',
-//       date: obj.date ? moment(obj.date).format('MMM Do, HH:mm') : moment().format('MMM Do, HH:mm'),
-//       text: anchorme(obj.text, {attributes: [{name: 'target', value :'_blank'}]}) || '??no text??',
-//       image: checkIfImageLink(obj.text) || null
-//     });
-//   });
-
-//   messagesContainer.append(html);
-//   messagesContainer[0].scrollTop = messagesContainer[0].scrollHeight;
-// };
-
-module.exports = {renderMessages: renderMessages};
-// module.exports = {app: app, renderMessages: renderMessages};

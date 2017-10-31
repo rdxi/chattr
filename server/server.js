@@ -14,7 +14,7 @@ const jwt = require('jsonwebtoken');
 const sanitizeHtml = require('sanitize-html');
 
 const redis = require('./redis.js');
-const User = require('./user.js');
+const User = require('./User.js');
 
 // move this to separate module probably
 const Mastodon = require('mastodon-api');
@@ -29,51 +29,15 @@ var mastodonStream = new MastodonStream(mastodon, io, 60*1000);
 // /move this to separate module
 
 
-
-// TODO: put userList in separate module?
-var userList = {users: []};
-
-var addToUserList = function(userObj) {
-  userList.users.push({serverToken: userObj.serverToken, name: userObj.payload.name});
-  io.emit('user list', userList);
-};
-
-var removeFromUserList = function(serverToken) {
-  var userIndex = userList.users.findIndex(function(arrObj) {
-    return arrObj.serverToken === serverToken;
-  });
-
-  if (userIndex > -1) {
-    userList.users.splice(userIndex, 1);
-  }
-
-  io.emit('user list', userList);
-};
-
-
-
 io.on('connection', function(socket) {
   var user = new User(socket);
 
   // verify returning user or generate new user
   socket.on('hello', function(token) {
     if (token.localToken) {
-      user.verifyUser(token)
-      .then(() => {
-        // user.addToSidebar();
-        addToUserList({serverToken: user.serverToken, payload: user.payload});
-        socket.emit('current user', {name: user.payload.name, avatar: user.payload.avatar});
-      })
-      .catch((err) => console.log(err));
-
+      user.verifyUser(token).catch((err) => console.log(err));
     } else {
-      user.generateNewUser()
-      .then(() => {
-        // user.addToSidebar();
-        addToUserList({serverToken: user.serverToken, payload: user.payload});
-        socket.emit('current user', {name: user.payload.name, avatar: user.payload.avatar});
-      })
-      .catch((err) => console.log(err));
+      user.generateNewUser().catch((err) => console.log(err));
     }
   });
 
@@ -152,7 +116,7 @@ io.on('connection', function(socket) {
   });
 
   socket.on('disconnect', function(){
-    removeFromUserList(user.serverToken);
+    user.removeFromUserList(user.serverToken);
     console.log('user disconnected');
   });
 });

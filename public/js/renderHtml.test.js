@@ -10,8 +10,8 @@ const proxyquire = require('proxyquire');
 // const { SocketIO, MockServer } = require('mock-socket');
 // io = SocketIO;
 
-var renderMessagesModule = proxyquire('./renderMessages.js', {'jquery': $});
-var renderMessages = renderMessagesModule.renderMessages;
+var renderHtml = proxyquire('./renderHtml.js', {'jquery': $});
+var renderMessages = renderHtml.renderMessages;
 
 
 

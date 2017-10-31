@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var $ = require('jquery');
 var Mustache = require('mustache');
 var anchorme = require('anchorme').default;
@@ -33,4 +34,37 @@ var renderMessages = function(messages) {
 };
 
 
-module.exports = {renderMessages: renderMessages};
+var renderSidebarUsers = function(userList) {
+  var html = '';
+  var usersContainer = $('.sidebar-users-items');
+  var template = $('#sidebar-user-template').html();
+  var uniqueUserList = _.uniqBy(userList, 'name');
+
+  usersContainer.html('');
+
+  uniqueUserList.forEach(function(user) {
+    html += Mustache.render(template, {user: user.name});
+  });
+
+  usersContainer.append(html);
+};
+
+var renderCurrentUser = function(user) {
+  var currentUserContainer = $('.sidebar-current-user');
+  var template = $('#sidebar-current-user-template').html();
+
+  currentUserContainer.html(' ');
+
+  var html = Mustache.render(template, {
+    user: user.name,
+    avatar: user.avatar
+  });
+
+  currentUserContainer.append(html);
+};
+
+module.exports = {
+  renderMessages: renderMessages,
+  renderSidebarUsers: renderSidebarUsers,
+  renderCurrentUser: renderCurrentUser
+};
