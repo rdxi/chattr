@@ -1,67 +1,51 @@
-const redis = require('./redis.js');
+const mastodon = require('./mastodon.js');
 const sanitizeHtml = require('sanitize-html');
+const saveMessageToDB = require('./saveMessageToDB.js');
 
 class MastodonStream {
-  constructor(mastodon, io, howOften) {
-    this.mastodon = mastodon;
+  constructor(io, howOften) {
     this.io = io;
     this.howOften = howOften;
+    this.mastodon = mastodon;
     this.init();
   }
 
   init() {
     var self = this;
-    const listener = this.mastodon.stream('streaming/public');
-
+    var listener = this.mastodon.stream('streaming/public');
     var messageDate = 0;
 
     listener.on('message', function(msg) {
-      if(Date.now() - messageDate > self.howOften) {
+
+      // emit messages only `howOften`
+      if (Date.now() - messageDate > self.howOften) {
         messageDate = Date.now();
 
-        var displayName = msg.data.account ? msg.data.account.display_name : msg.data.account;
-        var username = msg.data.account ? msg.data.account.username : msg.data.account;
-
-        if (!displayName) {
-          // if user don't have display name, show username instead
-          displayName = username;
-        }
-
-        var msgText = sanitizeHtml(msg.data.content);
-        console.log(displayName, 'said: ', sanitizeHtml(msg.data.content));
-
-        var msgAttachments = (msg.data.media_attachments && msg.data.media_attachments.length > 0) ? msg.data.media_attachments[0].preview_url : '';
-
-        var msgLink = msg.data.url;
-        var textWithAttachments = `${msgLink} ${msgText} ${msgAttachments}`;
-
-        // console.log('*** msgAttachments ', msgAttachments);
-
-        if (!displayName) {
-          console.log('*** data when undefined name: ', msg.data);
-          return;
-        }
-
-        // if (msg.data.media_attachments && msg.data.media_attachments.length > 0) {
-          // console.log('*** preview-image ', msg.data.media_attachments[0].preview_url);
-        // }
-
-        // post message here (needs to be in separate module)
-        var msgObj = {
+        let msgText = sanitizeHtml(msg.data.content);
+        let msgAttachments = (msg.data.media_attachments && msg.data.media_attachments.length > 0) ? msg.data.media_attachments[0].preview_url : '';
+        let msgLink = msg.data.url;
+        let textWithAttachments = `${msgLink} ${msgText} ${msgAttachments}`;
+        let displayName = msg.data.account ? msg.data.account.display_name : msg.data.account;
+        let username = msg.data.account ? msg.data.account.username : msg.data.account;
+        let msgObj = {
           name: displayName,
           text: textWithAttachments,
           date: new Date()
         };
 
-        // repeating code
-        var storedMsg = JSON.stringify(msgObj);
+        // return if no data object
+        if (typeof msg.data !== 'object') {
+          return;
+        }
 
-        redis.rpush('userMessages', storedMsg);
-        redis.ltrim('userMessages', -500, -1); // store only latest 500 messages because demo db has limited capacity
+        // show username if user don't have display name
+        if (!displayName) {
+          displayName = username;
+        }
 
+        // save to db and emit message
+        saveMessageToDB(msgObj);
         self.io.emit('chat message', msgObj);
-
-        //
       }
     });
     listener.on('error', err => console.log(err));

@@ -1,39 +1,41 @@
-var mastodonSearch = function(msg, mastodon) {
+const mastodon = require('./mastodon.js');
+const sanitizeHtml = require('sanitize-html');
+const saveMessageToDB = require('./saveMessageToDB.js');
 
+var mastodonSearch = function(msg, io) {
   return new Promise(function(resolve, reject) {
-    // console.log(msg);
-    // var mastodonSearchRegex = /^mastodon search/;
     var mastodonSearchRegex = /(^mastodon search)|(^mastodon find)/i;
-    //
 
     if ( mastodonSearchRegex.test(msg) ) {
-      // console.log('test passed');
-      var searchTerm = msg.split(' ')[2];
+      let searchTerm = msg.split(' ')[2];
 
       mastodon.get(`timelines/tag/${searchTerm}`, {limit: 1}).then(function(response) {
 
+        // if nothing found
         if (!response.data.length) {
-          resolve(false);
-          return;
+          let botMessage = {name: 'Mastodon bot', text: 'Nothing found'};
+          io.emit('chat message', botMessage);
+          return resolve(false);
         }
 
-        var text = response.data[0].content;
-        var image = (response.data[0].media_attachments && response.data[0].media_attachments.length > 0) ? response.data[0].media_attachments[0].preview_url : '';
+        // if something found
+        let text = response.data[0].content;
+        let sanitizedText = sanitizeHtml(text);
+        let image = (response.data[0].media_attachments && response.data[0].media_attachments.length > 0) ? response.data[0].media_attachments[0].preview_url : '';
+        let linkToPost = response.data[0].url;
+        let botMessage = {
+          name: 'Mastodon bot',
+          text: `${linkToPost} <br> ${sanitizedText} ${image}`
+        };
 
-        var linkToPost = response.data[0].url;
-
-
-        // console.log('***media attachments***', response.data[0].media_attachments);
-
-        console.log('*** response.data', response.data[0]);
-
-
-        resolve({text: text, image: image, linkToPost: linkToPost});
+        // todo test if resolves ok, test if saves to db ok
+        saveMessageToDB(botMessage);
+        io.emit('chat message', botMessage);
+        return resolve(botMessage);
       });
     } else {
-      reject('not mastodon search');
+      return reject('not mastodon search');
     }
-
   });
 
 

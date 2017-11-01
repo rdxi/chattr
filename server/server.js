@@ -1,36 +1,27 @@
+const port = process.env.PORT || 3000;
 const path = require('path');
-const http = require('http');
+const publicPath = path.join(__dirname, '../public');
+
 const express = require('express');
 const compression = require('compression');
+const http = require('http');
 
 const app = express().use(compression());
 const server = http.Server(app);
 const io = require('socket.io')(server);
 
-const publicPath = path.join(__dirname, '../public');
-const port = process.env.PORT || 3000;
-
-const jwt = require('jsonwebtoken');
 const sanitizeHtml = require('sanitize-html');
-
-const redis = require('./redis.js');
 const User = require('./User.js');
+const redis = require('./redis.js');
+const saveMessageToDB = require('./saveMessageToDB.js');
 
-// move this to separate module probably
-const Mastodon = require('mastodon-api');
 const mastodonSearch = require('./mastodonSearch.js');
 const MastodonStream = require('./mastodonStream.js');
-
-var mastodon = new Mastodon({
-  access_token: 'fd8ecb9adb8860a46cc78fbeb756c94fab958693bffa1d230a4960dcbc2f009d'
-});
-
-var mastodonStream = new MastodonStream(mastodon, io, 60*1000);
-// /move this to separate module
+var mastodonStream = new MastodonStream(io, 60*1000);
 
 
 io.on('connection', function(socket) {
-  var user = new User(socket);
+  var user = new User(io, socket);
 
   // verify returning user or generate new user
   socket.on('hello', function(token) {
@@ -46,81 +37,43 @@ io.on('connection', function(socket) {
     socket.emit('initial message history', messages);
   });
 
-  // send messages to users and store to db
+  // on new message from client
   socket.on('chat message', function(msg){
-
-    // 1. decode serverToken to get name, avatar
-    // 2. sanitize message
-    // 3. check if message is above character limit
-    // 4. check if its *delete all messages*
-    // 5. create new obj with sanitized message, user.name, user.avatar, date
-    // 6. check if message is for searchbot
-    // 7. store message in db
-    // 8. emit message to all users
-
-
-    var decoded = jwt.decode(user.serverToken);
+    // create object with message text and user data
     var sanitizedMsg = sanitizeHtml(msg, {allowedTags: ['a', 'img', 'b', 'strong', 'i', 'em']});
+    var msgObj = {
+      text: sanitizedMsg,
+      name: user.payload.name,
+      avatar: user.payload.avatar,
+      date: new Date()
+    };
 
+    // prevent long messages
     if (msg.length > 1000) {
       socket.emit('chat message', {name: 'admin', text:'Maximum message length is 1000 characters'});
       return;
     }
 
+    // check if command to delete all messages
     if (msg === '*delete all messages*') {
       redis.del('userMessages');
       io.emit('*delete all messages*');
       return;
     }
 
-    var msgObj = {
-      text: sanitizedMsg,
-      name: decoded.name,
-      avatar: decoded.avatar,
-      date: new Date()
-    };
+    // check if message is for searchBot
+    mastodonSearch(sanitizedMsg, io).catch((err) => console.log(err));
 
-    // test if message is for searchBot
-    mastodonSearch(msg, mastodon).then(function(result) {
-      // console.log('*** result:', result);
-
-      if (result) {
-        var sanitizedText = sanitizeHtml(result.text);
-
-        msgObj.name = 'Mastodon bot';
-        msgObj.avatar = '';
-        msgObj.text = `${result.linkToPost} <br> ${sanitizedText} ${result.image}`;
-
-        // repeating code
-        var storedMsg = JSON.stringify(msgObj);
-        redis.rpush('userMessages', storedMsg);
-        redis.ltrim('userMessages', -500, -1); // store only latest 500 messages because demo db has limited capacity
-
-        io.emit('chat message', msgObj);
-      } else {
-
-        // bug - sends admin message even if it wasnt mastodon search
-        msgObj.text = 'Nothing found';
-        msgObj.name = 'Mastodon bot';
-        msgObj.avatar = '';
-        io.emit('chat message', msgObj);
-      }
-    }).catch((err) => console.log(err));
-
-    // repeating code
-    var storedMsg = JSON.stringify(msgObj);
-    redis.rpush('userMessages', storedMsg);
-    redis.ltrim('userMessages', -500, -1); // store only latest 500 messages because demo db has limited capacity
-
+    // save to db and emit message
+    saveMessageToDB(msgObj);
     io.emit('chat message', msgObj);
   });
 
+  // on client disconnect
   socket.on('disconnect', function(){
     user.removeFromUserList(user.serverToken);
-    console.log('user disconnected');
   });
 });
-
 
 app.use('/', express.static(publicPath));
 

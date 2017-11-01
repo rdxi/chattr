@@ -8,7 +8,8 @@ const userList = require('./userList.js');
 
 
 class User {
-  constructor (socket) {
+  constructor (io, socket) {
+    this.io = io;
     this.socket = socket;
     this.serverToken;
     this.payload;
@@ -17,8 +18,7 @@ class User {
   addToUserList (userObj) {
     userList.users.push({serverToken: userObj.serverToken, name: userObj.payload.name});
 
-    this.socket.emit('user list', userList);
-    this.socket.broadcast.emit('user list', userList);
+    this.io.emit('user list', userList);
   }
 
   removeFromUserList (serverToken) {
@@ -30,8 +30,7 @@ class User {
       userList.users.splice(userIndex, 1);
     }
 
-    this.socket.emit('user list', userList);
-    this.socket.broadcast.emit('user list', userList);
+    this.io.emit('user list', userList);
   }
 
   sendCurrentUser() {
