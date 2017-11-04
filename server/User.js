@@ -98,12 +98,14 @@ class User {
 
       // token with secret - add to db
       redis.set(`user:${self.serverToken}`, JSON.stringify(payloadWithSecret));
+
+      // keep list of all users
       redis.sadd('users', self.serverToken);
 
       self.addToUserList({serverToken: self.serverToken, payload: self.payload});
       self.sendCurrentUser();
 
-      resolve('user generated successfully');
+      resolve({message: 'user generated successfully', token: self.serverToken, secret: secret});
     });
   }
 }
