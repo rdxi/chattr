@@ -17,7 +17,8 @@ const saveMessageToDB = require('./saveMessageToDB.js');
 
 const mastodonSearch = require('./mastodonSearch.js');
 const MastodonStream = require('./mastodonStream.js');
-var mastodonStream = new MastodonStream(io, 60*1000);
+
+new MastodonStream(io, 60*1000);
 
 
 io.on('connection', function(socket) {
@@ -32,7 +33,7 @@ io.on('connection', function(socket) {
     }
   });
 
-  // get last 100 messages from database and add them to DOM
+  // send 100 latest messages to client
   redis.lrange('userMessages', -100, -1, function (err, messages) {
     socket.emit('initial message history', messages);
   });
@@ -69,7 +70,7 @@ io.on('connection', function(socket) {
     io.emit('chat message', msgObj);
   });
 
-  // on client disconnect
+  // on client disconnect, remove from userList
   socket.on('disconnect', function(){
     user.removeFromUserList(user.serverToken);
   });

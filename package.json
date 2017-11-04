@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "node server/server.js",
-    "test": "tape public/js/*.test.js | tap-spec",
-    "test-watch": "tape-watch public/js/*.test.js -p tap-spec",
+    "test-client": "tape public/js/*.test.js | tap-spec",
+    "test-server": "tape server/*.test.js | tap-spec",
+    "test-watch-client": "tape-watch public/js/*.test.js -p tap-spec",
+    "test-watch-server": "tape-watch server/*.test.js -p tap-spec",
     "build-client-js": "browserify public/js/client.js | uglifyjs > public/js/bundle.js",
     "start-watchify": "watchify public/js/client.js -v -o \"uglifyjs > public/js/bundle.js\"",
     "start-nodemon": "nodemon server/server.js",
