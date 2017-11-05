@@ -83,7 +83,6 @@ input, textarea, button {
   }
 }
 
-
 .sidebar-current-user {
   display: flex;
   align-items: center;
@@ -212,3 +211,89 @@ input, textarea, button {
   padding: 10px;
 }
 
+.modal-overlay {
+  background-color: rgba(0,0,0, 0.5);
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  margin: auto;
+  transform: translateY(-50%);
+
+  color: #000;
+  background-color: #fff;
+
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.modal-title {
+  text-align: center;
+  font-weight: bold;
+  font-size: 24px;
+}
+
+@media (min-width: 568px) {
+  .modal-title {
+    font-size: 34px;
+  }
+}
+
+.modal-subtitle {
+  text-align: center;
+  font-size: 22px;
+}
+
+@media (max-width: 568px) {
+  .modal-subtitle {
+    font-size: 18px;
+  }
+}
+
+.modal-subtitle span {
+  font-weight: bold;
+}
+
+.modal-button {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.modal-button button {
+  background-color: #1B5E20;
+  box-shadow: none;
+  border: none;
+  outline: none;
+  padding: 5px;
+  padding-left: 20px;
+  padding-right: 20px;
+  color: #fff;
+  font-size: 24px;
+}
+
+@media (max-width: 568px) {
+  .modal-button button {
+    font-size: 18px;
+  }
+}
+
+.modal-button button:focus {
+  background-color: #1B5E20;
+  outline: 1px solid #2196F3;
+}
+
+.modal-button button:active {
+  background-color: #144418;
+}
+
+.modal-button button[disabled] {
+  opacity: 0.5;
+}

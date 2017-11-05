@@ -16,7 +16,6 @@ socket.on('connect', function() {
 
 socket.on('token', function(token) {
   var localToken = localStorage.setItem('token', token);
-  console.log(token);
 });
 
 socket.on('invalid token', function() {
@@ -50,6 +49,11 @@ socket.on('current user', function(obj) {
   renderCurrentUser(obj);
 });
 
+socket.on('welcome modal', function(username) {
+  $('.modal-subtitle-name').text(username);
+  $('.modal-overlay').show();
+});
+
 $('form').on('submit', function(){
   var input = $('#user-message');
   var inputIsEmpty = input.val().trim() === '';
@@ -66,6 +70,10 @@ $('form').on('submit', function(){
   input.val('');
 
   return false;
+});
+
+$('.modal-button .button-close').on('click', function() {
+  $('.modal-overlay').hide();
 });
 
 var toggleSidebar = function() {

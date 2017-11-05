@@ -102,6 +102,8 @@ class User {
       // keep list of all users
       redis.sadd('users', self.serverToken);
 
+      self.socket.emit('welcome modal', self.payload.name);
+
       self.addToUserList({serverToken: self.serverToken, payload: self.payload});
       self.sendCurrentUser();
 

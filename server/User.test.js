@@ -1,5 +1,3 @@
-// require("leaked-handles");
-
 const test = require('tape');
 const redis = require('./redis.js');
 const User = require('./User.js');
@@ -9,9 +7,9 @@ const mockIo = new Server('http://localhost:8080');
 
 test('user generation and verification', function(t) {
   var user = new User(mockIo, mockIo);
-  // var generatedUser = {};
 
   t.test('generate, verify, delete', function() {
+
     user.generateNewUser().then(function(result) {
       var generatedUser = Object.assign({}, {secret: result.secret, token: result.token});
 
@@ -27,13 +25,9 @@ test('user generation and verification', function(t) {
             mockIo.stop();
           });
         }).catch((err) => console.log(err));
-
       });
-
-
     }).catch((err) => console.log(err));
   });
-
 });
 
 test.onFinish(function() {
