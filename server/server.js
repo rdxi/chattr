@@ -33,8 +33,8 @@ io.on('connection', function(socket) {
     }
   });
 
-  // send 100 latest messages to client
-  redis.lrange('userMessages', -100, -1, function (err, messages) {
+  // send recent message history to client
+  redis.lrange('userMessages', -50, -1, function (err, messages) {
     socket.emit('initial message history', messages);
   });
 
