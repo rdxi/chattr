@@ -204,6 +204,10 @@ input, textarea, button {
   box-sizing: border-box;
 }
 
+.main-input form {
+  position: relative;
+}
+
 .main-input input {
   resize: none;
   box-sizing: border-box;
@@ -297,3 +301,48 @@ input, textarea, button {
 .modal-button button[disabled] {
   opacity: 0.5;
 }
+
+
+/* user mention lib styling */
+.tribute-container {
+  position: absolute;
+  top: auto !important;
+  left: 0 !important;
+  bottom: 100% !important;
+  height: auto;
+  max-height: 300px;
+  max-width: 500px;
+  overflow: auto;
+  display: block;
+  z-index: 999999;
+}
+
+.tribute-container ul {
+  margin: 0;
+  margin-top: 2px;
+  padding: 0;
+  list-style: none;
+  background: #efefef;
+}
+
+.tribute-container li {
+  padding: 5px 5px;
+  cursor: pointer;
+}
+
+.tribute-container li.highlight, .tribute-container li:hover {
+  background: #ddd;
+}
+
+.tribute-container li span {
+  font-weight: bold;
+}
+
+.tribute-container li.no-match {
+  cursor: default;
+}
+
+.tribute-container .menu-highlighted {
+  font-weight: bold;
+}
+/* /user mention lib styling */

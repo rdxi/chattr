@@ -1,11 +1,13 @@
+// TODO?: add emojis button like slack  😀😗😙😑😮😯😴😛😕😟
+// make only 3 emojis: crying laugh, ok, and poop
+// https://unicode.org/emoji/charts/full-emoji-list.html 💩💩💩
+
 var $ = require('jquery');
 var renderMessages = require('./renderHtml.js').renderMessages;
 var renderSidebarUsers = require('./renderHtml.js').renderSidebarUsers;
 var renderCurrentUser = require('./renderHtml.js').renderCurrentUser;
+var userMentions = require('./userMentions.js');
 
-// TODO?: add emojis button like slack  😀😗😙😑😮😯😴😛😕😟
-// make only 3 emojis: crying laugh, ok, and poop
-// https://unicode.org/emoji/charts/full-emoji-list.html 💩💩💩
 
 var socket = io();
 
@@ -43,6 +45,8 @@ socket.on('chat message', function(obj){
 
 socket.on('user list', function(obj) {
   renderSidebarUsers(obj.users);
+
+  userMentions.updateUserList(obj.users);
 });
 
 socket.on('current user', function(obj) {
