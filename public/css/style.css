@@ -2,7 +2,24 @@
   font-family: 'OpenSans';
   font-style: normal;
   font-weight: 400;
-  src: url('OpenSans-Regular.ttf') format('truetype');
+  src: url('fonts/OpenSans-Regular.woff2') format('woff2'),
+       url('fonts/OpenSans-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'OpenSans';
+  font-style: normal;
+  font-weight: 700;
+  src: url('fonts/OpenSans-Bold.woff2') format('woff2'),
+       url('fonts/OpenSans-Bold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'OpenSans';
+  font-style: normal;
+  font-weight: 600;
+  src: url('fonts/OpenSans-Semibold.woff2') format('woff2'),
+       url('fonts/OpenSans-Semibold.ttf') format('truetype');
 }
 
 html, body {
@@ -168,7 +185,7 @@ input, textarea, button {
 .main-message-user {
   display: inline-block;
   vertical-align: baseline;
-  font-weight: bold;
+  font-weight: 600;
 }
 
 .main-message-date {
@@ -235,7 +252,7 @@ input, textarea, button {
   color: #000;
   background-color: #fff;
 
-  padding: 10px;
+  padding: 20px 10px;
   box-sizing: border-box;
 }
 
@@ -251,19 +268,26 @@ input, textarea, button {
   }
 }
 
-.modal-subtitle {
+.modal-text {
   text-align: center;
   font-size: 22px;
 }
 
+
 @media (max-width: 568px) {
-  .modal-subtitle {
+  .modal-text {
     font-size: 18px;
   }
 }
 
-.modal-subtitle span {
-  font-weight: bold;
+.modal-text span.text-bold {
+  font-weight: 600;
+}
+
+.modal-text span.text-code {
+  background-color: rgba(63, 81, 181, 0.21);
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 .modal-button {
@@ -303,7 +327,7 @@ input, textarea, button {
 }
 
 
-/* user mention lib styling */
+/* @userMention library styling */
 .tribute-container {
   position: absolute;
   top: auto !important;
@@ -345,4 +369,4 @@ input, textarea, button {
 .tribute-container .menu-highlighted {
   font-weight: bold;
 }
-/* /user mention lib styling */
+/* /@userMention library styling */
