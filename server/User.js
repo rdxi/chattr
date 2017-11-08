@@ -65,8 +65,8 @@ class User {
           self.payload = payload;
           self.serverToken = token.localToken;
 
-          self.addToUserList({serverToken: self.serverToken, payload: self.payload});
           self.sendCurrentUser();
+          self.addToUserList({serverToken: self.serverToken, payload: self.payload});
 
           resolve('token verified successfully');
         });
@@ -104,8 +104,8 @@ class User {
 
       self.socket.emit('welcome modal', self.payload.name);
 
-      self.addToUserList({serverToken: self.serverToken, payload: self.payload});
       self.sendCurrentUser();
+      self.addToUserList({serverToken: self.serverToken, payload: self.payload});
 
       resolve({message: 'user generated successfully', token: self.serverToken, secret: secret});
     });

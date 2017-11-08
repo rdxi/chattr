@@ -8,9 +8,12 @@ var tribute = new window.Tribute({
   positionMenu: false
 });
 
-var updateUserList = function(newList) {
+var updateUserList = function(newList, currentUser) {
   var namesArray = [];
-  newList.forEach((user) => namesArray.push({key: user.name, value: user.name}));
+  newList.forEach((user) => {
+    if (user.name === currentUser.name) return;
+    namesArray.push({key: user.name, value: user.name});
+  });
   tribute.append(0, namesArray, true);
 };
 

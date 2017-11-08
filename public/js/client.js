@@ -7,7 +7,7 @@ var renderMessages = require('./renderHtml.js').renderMessages;
 var renderSidebarUsers = require('./renderHtml.js').renderSidebarUsers;
 var renderCurrentUser = require('./renderHtml.js').renderCurrentUser;
 var userMentions = require('./userMentions.js');
-
+var currentUser = {};
 
 var socket = io();
 
@@ -40,18 +40,19 @@ socket.on('*delete all messages*', function() {
 });
 
 socket.on('chat message', function(obj){
-  renderMessages(obj);
-});
-
-socket.on('user list', function(obj) {
-  renderSidebarUsers(obj.users);
-
-  userMentions.updateUserList(obj.users);
+  renderMessages(obj, currentUser);
 });
 
 socket.on('current user', function(obj) {
   renderCurrentUser(obj);
+  currentUser = obj;
 });
+
+socket.on('user list', function(obj) {
+  renderSidebarUsers(obj.users);
+  userMentions.updateUserList(obj.users, currentUser);
+});
+
 
 socket.on('welcome modal', function(username) {
   $('.modal-subtitle-name').text(username);
@@ -60,8 +61,11 @@ socket.on('welcome modal', function(username) {
 
 $('form').on('submit', function(){
   var input = $('#user-message');
-  var inputIsEmpty = input.val().trim() === '';
-  var tooManyCharacters = input.val().length > 1000;
+  var inputValue = input.val();
+  var inputIsEmpty = inputValue.trim() === '';
+  var tooManyCharacters = inputValue.length > 1000;
+  var userMentions = inputValue.match(/(?:^|\s|$)@([[a-z0-9_-]+]*)/gi);
+
 
   if (inputIsEmpty) return false;
 
@@ -70,7 +74,7 @@ $('form').on('submit', function(){
     return false;
   }
 
-  socket.emit('chat message', input.val());
+  socket.emit('chat message', {message: inputValue, userMentions: userMentions});
   input.val('');
 
   return false;

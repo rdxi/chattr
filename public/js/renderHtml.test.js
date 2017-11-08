@@ -5,12 +5,13 @@ const JSDOM = require("jsdom").JSDOM;
 const window = new JSDOM(html).window;
 
 const $ = require('jquery')(window);
-const proxyquire = require('proxyquire');
+const proxyquire = require('proxyquire').noCallThru();
 
 // const { SocketIO, MockServer } = require('mock-socket');
 // io = SocketIO;
-
-var renderHtml = proxyquire('./renderHtml.js', {'jquery': $});
+// var soundOfMessage = {play: ()=> null};
+var soundOfMessage = '';
+var renderHtml = proxyquire('./renderHtml.js', {'jquery': $, './soundOfMessage.js': soundOfMessage});
 var renderMessages = renderHtml.renderMessages;
 
 

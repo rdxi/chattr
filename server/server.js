@@ -39,14 +39,19 @@ io.on('connection', function(socket) {
   });
 
   // on new message from client
-  socket.on('chat message', function(msg){
+  socket.on('chat message', function(messageObj){
+    var userMentions = messageObj.userMentions;
+    var msg = messageObj.message;
+
+
     // create object with message text and user data
     var sanitizedMsg = sanitizeHtml(msg, {allowedTags: ['a', 'img', 'b', 'strong', 'i', 'em']});
     var msgObj = {
       text: sanitizedMsg,
       name: user.payload.name,
       avatar: user.payload.avatar,
-      date: new Date()
+      date: new Date(),
+      userMentions: userMentions
     };
 
     // prevent long messages

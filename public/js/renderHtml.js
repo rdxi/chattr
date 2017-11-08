@@ -4,11 +4,13 @@ var Mustache = require('mustache');
 var anchorme = require('anchorme').default;
 var moment = require('moment');
 var checkIfImageLink = require('./utils/checkifimagelink.js');
+var soundOfMessage = require('./soundOfMessage.js');
 
-var renderMessages = function(messages) {
+var renderMessages = function(messages, currentUser) {
   var html = '';
   var messagesContainer = $('.main-messages');
   var template = $('#message-template').html();
+  var mentionsCurrentUser = false;
 
   // if single message - put it in array to reuse parsing code below
   if (!Array.isArray(messages)) {
@@ -19,16 +21,21 @@ var renderMessages = function(messages) {
 
   messages.forEach(function(stringObj) {
     var obj = JSON.parse(stringObj);
-    // // var noSlashes = /^((?!\/).)*$/gi;
-    // // var userMentionRegex = /\B@[a-z0-9_-]+/gi;
-    // var userMentionRegex = /(?:^|\s|$)@([[a-z0-9_-]+]*)/gi;
+    var userMentions = obj.userMentions || '';
 
-    // // var x = obj.text.match(noSlashes);
-    // var a = obj.text.match(userMentionRegex);
-    // var zzz = obj.text.replace(/(?:^|\s|$)@([[a-z0-9_-]+]*)/gi, "<span>$` $1 $'</span>");
-    // // console.log(x);
-    // console.log(a);
-    // console.log(zzz);
+    if (userMentions) {
+      userMentions.forEach(function(val) {
+        var wrapClassName = 'user-mention';
+        if (currentUser && val.trim() === ('@' + currentUser.name)) {
+          wrapClassName += ' ' + 'user-mention-current';
+          mentionsCurrentUser = true;
+        }
+
+        obj.text = obj.text.split(val.trim())
+                           .join('<span class="' + wrapClassName + '">'+val+'</span>');
+      });
+
+    }
 
     html += Mustache.render(template, {
       avatar: obj.avatar || '//www.gravatar.com/avatar/00000000000000000000000000000000',
@@ -39,13 +46,9 @@ var renderMessages = function(messages) {
     });
   });
 
-  // var str = "@jpotts18 what is up man? Are you hanging out with @kyle_clegg";
-  // var pattern = /\B@[a-z0-9_-]+/gi;
-  // str.match(pattern);
-  // ["@jpotts18", "@kyle_clegg"]
-
   messagesContainer.append(html);
   messagesContainer[0].scrollTop = messagesContainer[0].scrollHeight;
+  if (mentionsCurrentUser) soundOfMessage.play();
 };
 
 
