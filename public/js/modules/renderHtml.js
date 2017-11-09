@@ -3,7 +3,7 @@ var $ = require('jquery');
 var Mustache = require('mustache');
 var anchorme = require('anchorme').default;
 var moment = require('moment');
-var checkIfImageLink = require('./utils/checkifimagelink.js');
+var isImageLink = require('./utils/isImageLink.js');
 var soundOfMessage = require('./soundOfMessage.js');
 var scrollToBottom = require('./utils/scrollToBottom.js');
 
@@ -20,6 +20,7 @@ var renderMessages = function(messages, currentUser) {
     messages = arr;
   }
 
+  // turn messages into html
   messages.forEach(function(stringObj) {
     var obj = JSON.parse(stringObj);
     var userMentions = obj.userMentions || '';
@@ -27,15 +28,17 @@ var renderMessages = function(messages, currentUser) {
     if (userMentions) {
       userMentions.forEach(function(val) {
         var wrapClassName = 'user-mention';
+
+        // highlight current user mention, and assign variable to play sound later
         if (currentUser && val.trim() === ('@' + currentUser.name)) {
-          wrapClassName += ' ' + 'user-mention-current';
           mentionsCurrentUser = true;
+          wrapClassName += ' ' + 'user-mention-current';
         }
 
+        // wrap all mentions in span
         obj.text = obj.text.split(val.trim())
                            .join('<span class="' + wrapClassName + '">'+val+'</span>');
       });
-
     }
 
     html += Mustache.render(template, {
@@ -43,7 +46,7 @@ var renderMessages = function(messages, currentUser) {
       user: obj.name || 'anonymous',
       date: obj.date ? moment(obj.date).format('MMM Do, HH:mm') : moment().format('MMM Do, HH:mm'),
       text: anchorme(obj.text, {attributes: [{name: 'target', value :'_blank'}]}) || '??no text??',
-      image: checkIfImageLink(obj.text) || null
+      image: isImageLink(obj.text) || null
     });
   });
 

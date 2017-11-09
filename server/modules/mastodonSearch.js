@@ -28,7 +28,6 @@ var mastodonSearch = function(msg, io) {
           text: `${linkToPost} <br> ${sanitizedText} ${image}`
         };
 
-        // todo test if resolves ok, test if saves to db ok
         saveMessageToDB(botMessage);
         io.emit('chat message', botMessage);
         return resolve(botMessage);

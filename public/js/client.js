@@ -1,15 +1,14 @@
+var socket = io();
 var $ = require('jquery');
+var currentUser = {};
 var renderMessages = require('./modules/renderHtml.js').renderMessages;
 var renderSidebarUsers = require('./modules/renderHtml.js').renderSidebarUsers;
 var renderCurrentUser = require('./modules/renderHtml.js').renderCurrentUser;
 var userMentions = require('./modules/userMentions.js');
-var emojiHandlers = require('./modules/emojiHandlers.js');
-var sidebarHandlers = require('./modules/sidebarHandlers.js');
-var modalHandlers = require('./modules/modalHandlers.js');
+require('./modules/emojiHandlers.js');
+require('./modules/sidebarHandlers.js');
+require('./modules/modalHandlers.js');
 
-var currentUser = {};
-
-var socket = io();
 
 socket.on('connect', function() {
   var localToken = localStorage.getItem('token');
@@ -17,7 +16,7 @@ socket.on('connect', function() {
 });
 
 socket.on('token', function(token) {
-  var localToken = localStorage.setItem('token', token);
+  localStorage.setItem('token', token);
 });
 
 socket.on('invalid token', function() {

@@ -1,6 +1,6 @@
 var anchorme = require('anchorme').default;
 
-var checkIfImageLink = function(text) {
+var isImageLink = function(text) {
   var isImage = /(jpg|jpeg|gif|png|svg)$/;
   var urlList = anchorme(text, {list:true});
 
@@ -11,4 +11,4 @@ var checkIfImageLink = function(text) {
   return imageLink ? imageLink.raw : false;
 };
 
-module.exports = checkIfImageLink;
+module.exports = isImageLink;

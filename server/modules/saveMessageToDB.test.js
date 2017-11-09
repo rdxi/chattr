@@ -21,8 +21,6 @@ test('chat messages', function(t) {
         t.equal(delResult, 1, 'message deleted');
         t.end();
       });
-
-      // redis.disconnect(); // breaks other tests for some reason // also tape-watch - doesnt show all errors - deleted it
     });
   });
 

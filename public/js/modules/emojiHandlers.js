@@ -15,7 +15,6 @@ var emojiPicker = function() {
     userMessageInput.val(userMessageInput.val() + pickedEmoji);
 
     highlightInput(userMessageInput[0]);
-    // userMessageInput.focus();
   });
 
   // prevent text selection on doubleclick
