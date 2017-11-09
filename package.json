@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node server/server.js",
-    "test-client": "tape public/js/*.test.js | tap-spec",
-    "test-server": "tape server/*.test.js | tap-spec",
+    "test-client": "tape public/js/**/*.test.js | tap-spec",
+    "test-server": "tape server/**/*.test.js | tap-spec",
     "test-watch-client": "nodemon --exec \"npm run test-client\"",
     "test-watch-server": "nodemon --exec \"npm run test-server\"",
     "build-client-js": "browserify public/js/client.js | uglifyjs > public/js/bundle.js",

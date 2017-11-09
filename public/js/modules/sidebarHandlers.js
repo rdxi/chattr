@@ -11,7 +11,7 @@ var sidebarHandlers = function() {
       userMessageInput.val(userMessageInput.val() + '@' + userName + ' ');
 
       highlightInput(userMessageInput[0]);
-      userMessageInput.focus();
+      // userMessageInput.focus();
     });
   };
 
