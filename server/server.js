@@ -11,12 +11,12 @@ const server = http.Server(app);
 const io = require('socket.io')(server);
 
 const sanitizeHtml = require('sanitize-html');
-const User = require('./User.js');
-const redis = require('./redis.js');
-const saveMessageToDB = require('./saveMessageToDB.js');
+const User = require('./modules/User.js');
+const redis = require('./modules/redis.js');
+const saveMessageToDB = require('./modules/saveMessageToDB.js');
 
-const mastodonSearch = require('./mastodonSearch.js');
-const MastodonStream = require('./mastodonStream.js');
+const mastodonSearch = require('./modules/mastodonSearch.js');
+const MastodonStream = require('./modules/mastodonStream.js');
 
 new MastodonStream(io, 60*1000);
 

@@ -1,15 +1,11 @@
-// TODO?: add emojis button like slack  😀😗😙😑😮😯😴😛😕😟
-// make only 3 emojis: crying laugh, ok, and poop
-// https://unicode.org/emoji/charts/full-emoji-list.html 💩💩💩
-
 var $ = require('jquery');
-var renderMessages = require('./renderHtml.js').renderMessages;
-var renderSidebarUsers = require('./renderHtml.js').renderSidebarUsers;
-var renderCurrentUser = require('./renderHtml.js').renderCurrentUser;
-var userMentions = require('./userMentions.js');
-var emojiHandlers = require('./emojiHandlers.js');
-var sidebarHandlers = require('./sidebarHandlers.js');
-var modalHandlers = require('./modalHandlers.js');
+var renderMessages = require('./modules/renderHtml.js').renderMessages;
+var renderSidebarUsers = require('./modules/renderHtml.js').renderSidebarUsers;
+var renderCurrentUser = require('./modules/renderHtml.js').renderCurrentUser;
+var userMentions = require('./modules/userMentions.js');
+var emojiHandlers = require('./modules/emojiHandlers.js');
+var sidebarHandlers = require('./modules/sidebarHandlers.js');
+var modalHandlers = require('./modules/modalHandlers.js');
 
 var currentUser = {};
 
