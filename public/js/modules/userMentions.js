@@ -10,7 +10,7 @@ var tribute = new window.Tribute({
 
 var updateUserList = function(newList, currentUser) {
   var namesArray = [];
-  newList.forEach((user) => {
+  newList.forEach(function (user) {
     if (user.name === currentUser.name) return;
     namesArray.push({key: user.name, value: user.name});
   });

@@ -251,7 +251,6 @@ input, textarea, button {
 
 .main-input input#user-message.highlighted {
   background-color: #eee;
-  background-color: #fafafa;
 }
 
 .modal-overlay {

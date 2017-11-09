@@ -5,6 +5,7 @@ var anchorme = require('anchorme').default;
 var moment = require('moment');
 var checkIfImageLink = require('./utils/checkifimagelink.js');
 var soundOfMessage = require('./soundOfMessage.js');
+var scrollToBottom = require('./utils/scrollToBottom.js');
 
 var renderMessages = function(messages, currentUser) {
   var html = '';
@@ -47,7 +48,8 @@ var renderMessages = function(messages, currentUser) {
   });
 
   messagesContainer.append(html);
-  messagesContainer[0].scrollTop = messagesContainer[0].scrollHeight;
+
+  scrollToBottom(messagesContainer[0]);
   if (mentionsCurrentUser) soundOfMessage.play();
 };
 
