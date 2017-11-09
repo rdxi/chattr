@@ -6,13 +6,10 @@ const window = new JSDOM(html).window;
 
 const $ = require('jquery')(window);
 const proxyquire = require('proxyquire').noCallThru();
+const soundOfMessageStub = {play: ()=> null};
 
-// const { SocketIO, MockServer } = require('mock-socket');
-// io = SocketIO;
-// var soundOfMessage = {play: ()=> null};
-var soundOfMessage = '';
-var renderHtml = proxyquire('./renderHtml.js', {'jquery': $, './soundOfMessage.js': soundOfMessage});
-var renderMessages = renderHtml.renderMessages;
+const renderHtml = proxyquire('./renderHtml.js', {'jquery': $, './soundOfMessage.js': soundOfMessageStub});
+const renderMessages = renderHtml.renderMessages;
 
 
 
@@ -24,15 +21,15 @@ test('render html', function(t) {
       text: 'Hello'
     };
 
-    t.equal($('.main-message-text').text(), '', 'No text before rendering');
+    t.equal($('.main-message-text').text(), '', 'no text before rendering');
     renderMessages(dataObj);
-    t.equal($('.main-message-text').text(), 'Hello', 'Text after rendering');
+    t.equal($('.main-message-text').text(), 'Hello', 'text after rendering');
 
     $('.main-messages').html('');
     t.end();
   });
 
-  t.test('renderMessages - one message', function(t) {
+  t.test('renderMessages - 1 message', function(t) {
     var dataObj = {
       name: 'Bob',
       text: 'Hello'
@@ -46,7 +43,7 @@ test('render html', function(t) {
     t.end();
   });
 
-  t.test('renderMessages - three message', function(t) {
+  t.test('renderMessages - 3 messages', function(t) {
     var dataObj = [
       '{"name": "Bob", "text": "Hello"}',
       '{"name": "Rob", "text": "Hewwo"}',

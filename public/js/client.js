@@ -7,6 +7,10 @@ var renderMessages = require('./renderHtml.js').renderMessages;
 var renderSidebarUsers = require('./renderHtml.js').renderSidebarUsers;
 var renderCurrentUser = require('./renderHtml.js').renderCurrentUser;
 var userMentions = require('./userMentions.js');
+var emojiHandlers = require('./emojiHandlers.js');
+var sidebarHandlers = require('./sidebarHandlers.js');
+var modalHandlers = require('./modalHandlers.js');
+
 var currentUser = {};
 
 var socket = io();
@@ -53,7 +57,6 @@ socket.on('user list', function(obj) {
   userMentions.updateUserList(obj.users, currentUser);
 });
 
-
 socket.on('welcome modal', function(username) {
   $('.modal-subtitle-name').text(username);
   $('.modal-overlay').show();
@@ -65,7 +68,6 @@ $('form').on('submit', function(){
   var inputIsEmpty = inputValue.trim() === '';
   var tooManyCharacters = inputValue.length > 1000;
   var userMentions = inputValue.match(/(?:^|\s|$)@([[a-z0-9_-]+]*)/gi);
-
 
   if (inputIsEmpty) return false;
 
@@ -79,18 +81,3 @@ $('form').on('submit', function(){
 
   return false;
 });
-
-$('.modal-button .button-close').on('click', function() {
-  $('.modal-overlay').hide();
-});
-
-var toggleSidebar = function() {
-  var sidebarToggle = $('.sidebar-toggle');
-  var sidebar = $('.sidebar');
-
-  sidebarToggle.on('click', function() {
-    sidebar.toggleClass('sidebar--visible');
-  });
-};
-
-toggleSidebar();

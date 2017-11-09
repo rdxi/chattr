@@ -124,6 +124,7 @@ input, textarea, button {
 .sidebar-user {
   color: #fff;
   padding: 2px 10px 2px 10px;
+  cursor: pointer;
 }
 
 .sidebar-users-title {
@@ -237,11 +238,20 @@ input, textarea, button {
   position: relative;
 }
 
-.main-input input {
+.main-input input#user-message {
   resize: none;
   box-sizing: border-box;
   width: 100%;
   padding: 10px;
+  transition: 0.1s background-color;
+  box-shadow: none;
+  border: 1px solid #aaa;
+  padding-right: 40px;
+}
+
+.main-input input#user-message.highlighted {
+  background-color: #eee;
+  background-color: #fafafa;
 }
 
 .modal-overlay {
@@ -283,6 +293,7 @@ input, textarea, button {
 .modal-text {
   text-align: center;
   font-size: 22px;
+  margin: 5px 0;
 }
 
 
@@ -343,6 +354,33 @@ input, textarea, button {
   opacity: 0.5;
 }
 
+
+.emoji-picker {
+  position: absolute;
+  bottom: 8px;
+  right: 7px;
+  font-size: 24px;
+}
+
+.emoji-picker-button {
+  cursor: pointer;
+}
+
+.emoji-picker-list {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  width: 146px;
+  right: -6px;
+  background-color: #fff;
+  padding: 10px;
+  outline: 1px solid #ccc;
+  margin-bottom: 5px;
+}
+
+.emoji-picker-list span {
+  cursor: pointer;
+}
 
 /* @userMention library styling */
 .tribute-container {
