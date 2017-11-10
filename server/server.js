@@ -38,11 +38,10 @@ io.on('connection', function(socket) {
     socket.emit('initial message history', messages);
   });
 
-  // on new message from client
+  // new message from client
   socket.on('chat message', function(messageObj){
     var userMentions = messageObj.userMentions;
     var msg = messageObj.message;
-
 
     // create object with message text and user data
     var sanitizedMsg = sanitizeHtml(msg, {allowedTags: ['a', 'img', 'b', 'strong', 'i', 'em']});
