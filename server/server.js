@@ -1,6 +1,6 @@
 const port = process.env.PORT || 3000;
 const path = require('path');
-const publicPath = path.join(__dirname, '../public');
+const publicPath = path.join(__dirname, '../client/public');
 
 const express = require('express');
 const compression = require('compression');

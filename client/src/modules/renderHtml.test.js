@@ -1,6 +1,6 @@
 const test = require('tape');
 
-const html = require('fs').readFileSync('./public/index.html', { encoding: 'utf-8' });
+const html = require('fs').readFileSync('./client/public/index.html', { encoding: 'utf-8' });
 const JSDOM = require("jsdom").JSDOM;
 const window = new JSDOM(html).window;
 
