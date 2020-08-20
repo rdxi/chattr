@@ -3,9 +3,6 @@ Chattr
 
 Chat app with Mastodon integration
 
-Online demo: [http://chat3000.herokuapp.com/](http://chat3000.herokuapp.com/)
-(takes ~30 seconds to start up)
-
 <img src="https://raw.githubusercontent.com/rdxi/chattr/master/design--chattr.png" width=600>
 
 ## Features
